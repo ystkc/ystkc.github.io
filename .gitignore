@@ -1,0 +1,11 @@
+*.db
+*.log
+*.txt
+*.zip
+*.rar
+*.i64
+*.jpg
+/fiddler/
+/archive/
+default_cookie.json
+default_headers.json
