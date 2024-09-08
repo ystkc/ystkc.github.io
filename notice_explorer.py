@@ -7,6 +7,7 @@ import hashlib
 import os
 import re
 import threading
+import random
 from pypinyin import pinyin, Style
 
 class_list_url = 'https://group.baicizhan.com/group/get_group_rank'
@@ -160,9 +161,11 @@ class BCZNotice:
         
         control_char = []
         for item in result['word_list']:
-            position = item['position'].split('-')
-            control_char.append({'num': text_without_punc_index[int(position[0])], 'type': f'\033[45m({item["category"]}:{item["keyword"]})'}) 
-            control_char.append({'num': text_without_punc_index[int(position[1])], 'type': '\033[0m'})
+            positions = item['position'].split(',')
+            for pair in positions:
+                position = pair.split('-')
+                control_char.append({'num': text_without_punc_index[int(position[0])], 'type': f'\033[45m({item["category"]}:{item["keyword"]})'}) 
+                control_char.append({'num': text_without_punc_index[int(position[1])], 'type': '\033[0m'})
             
         
         for start, end, pattern in matches:
@@ -220,11 +223,11 @@ class BCZNotice:
 
     
     
-    def getNotice(self, rank_type: int = 7) -> list: # 7王者; 6星耀;5钻石;4铂金;3黄金;2白银;1青铜
+    def getNotice(self, rank_type: int = 7, automated: bool = False) -> list: # 7王者; 6星耀;5钻石;4铂金;3黄金;2白银;1青铜
         '''获取通知列表'''
         # 获取今天日期的个位数，获取排名百位与日期各位数相同的班级的通知(每天获取100个班级)
         today_date = time.strftime('%Y-%m-%d', time.localtime())
-        today_date_digit = int(today_date[-1])
+        today_date_digit = (int(today_date[-1]) % 5) * 2
         # 先获取班级列表
         class_list_response = requests.get(f"{class_list_url}?rank={rank_type}", headers=self.getHeaders())
         class_list_json = json.loads(class_list_response.text)
@@ -239,10 +242,12 @@ class BCZNotice:
         self.conn.commit()
         # 获取排名为today_date_digit * 100后的100个班级
 
-        class_list = class_list[today_date_digit * 100 + 1:(today_date_digit + 1) * 100 - 1]
+        class_list = class_list[today_date_digit * 100 + 1:(today_date_digit + 2) * 100 - 1]
         rank_base = today_date_digit * 100 + 1
         os.system('cls')
-        print(f'📚 → 今日获取段位{self.rank_type_dict[rank_type]}从{rank_base}到{rank_base + len(class_list) - 1}的班级通知，大约需要10分钟，按q中断')
+        print(f'📚 → 今日获取段位{self.rank_type_dict[rank_type]}从{rank_base}到{rank_base + len(class_list) - 1}')
+        if not automated:
+            print('🔥 → 按回车下一个班级，输入q退出')
         # 遍历班级列表，获取通知
         notice_list = []
         for i, class_item in enumerate(class_list):
@@ -258,7 +263,10 @@ class BCZNotice:
             for member in members:
                 if member['leader'] == True:
                     class_name = f"{class_name}(班长：{member['nickname']})"
-            print(f'❤️ → 获取到排名{rank_base + i}的班级{class_name}的通知：\n{self.controlCharToStr(control_char, content)}\n')
+            if automated:
+                print(f'❤️ → 获取到排名{rank_base + i}的班级{class_name}的通知\n')
+            else:
+                print(f'❤️ → 获取到排名{rank_base + i}的班级{class_name}的通知：\n{self.controlCharToStr(control_char, content)}\n')
             # 检测当前通知是否已存在数据库
             hash_value = hashlib.md5(content.encode('utf-8')).hexdigest()
             self.cursor.execute(f"SELECT NAME FROM notice WHERE HASH_VALUE='{hash_value}'")
@@ -278,9 +286,12 @@ class BCZNotice:
             
             # 自己看公告用，或者随机延时3-10秒
             # time.sleep(random.randint(3, 10))
-            if input('🔥 → 换行继续') == 'q':
-                print('🛑 → 已中断')
-                break
+            if automated:
+                time.sleep(random.randint(3, 10))
+            else:
+                if input('🔥 → 换行继续') == 'q':
+                    print('🛑 → 已中断')
+                    break
             os.system('cls')
         if os.path.exists(f'./archive/notice{time.strftime("%Y%m%d", time.localtime())}.json'):
             with open(f'./archive/notice{time.strftime("%Y%m%d", time.localtime())}.json', 'r', encoding='utf-8') as f:
