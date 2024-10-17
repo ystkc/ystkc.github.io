@@ -200,5 +200,11 @@
     },
     "触碰": {
         "expired_index": 0
+    },
+    "好": {
+        "expired_index": 0
+    },
+    "摸索": {
+        "expired_index": 0
     }
 }

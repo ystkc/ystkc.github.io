@@ -5,7 +5,8 @@
 *.rar
 *.i64
 *.jpg
-/fiddler/
+/examples/
 /archive/
+/outdated/
 default_cookie.json
 default_headers.json
