@@ -1,4 +1,4 @@
-# BCZ_wordscheck
+# BCZ-Notice-Examiner
  更适合百词斩公告的综合违禁词检测
 
  采用内置正则表达式匹配、DFA和NLP检测，违禁词来自非官方渠道收集
