@@ -28,7 +28,9 @@ async function init() {
     warnWordsSet = new Set(warnWords);  
 }
 init().catch(console.error);
-
+window.onload = function() {  
+    document.querySelector("#notice-input").focus();
+}
 
 function check_notice() {
     
@@ -114,7 +116,7 @@ function check_notice() {
                             warn = false;  
                             enhance = false;  
                         }  
-                        newText += '<span class="bad" style="background-color:pink;border-radius:5px" title="这是违禁词。根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">';  
+                        newText += '<span class="bad" style="background-color:pink;border-radius:5px" title="95%可能是违禁词。根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">';  
                         bad = true;  
                     } else if (minChar === "2" && !accept) {  
                         if (bad || warn || enhance) {  
@@ -123,7 +125,7 @@ function check_notice() {
                             warn = false;  
                             enhance = false;  
                         }  
-                        newText += '<span class="accept" style="background-color:aquamarine;border-radius:5px" title="这是没问题的内容。收集近两周通过的公告筛选得到，一般没问题" onclick="alert(this.title)">';  
+                        newText += '<span class="accept" style="background-color:aquamarine;border-radius:5px" title="95%可能是没问题的内容。收集近两周通过的公告筛选得到，一般没问题" onclick="alert(this.title)">';  
                         accept = true;  
                     } else if (minChar === "3" && !warn) {  
                         if (bad || accept || enhance) {  
@@ -131,7 +133,7 @@ function check_notice() {
                             bad = false;  
                             accept = false;  
                         }  
-                        newText += '<span class="warn" style="background-color:lemonchiffon;border-radius:5px" title="这是疑似违禁词。收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">';  
+                        newText += '<span class="warn" style="background-color:lemonchiffon;border-radius:5px" title="这是疑似违禁词，大约10%可能性。收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">';  
                         warn = true;  
                     } else if (minChar === "0" && !enhance) {  
                         if (bad || accept || warn) {  
@@ -140,7 +142,7 @@ function check_notice() {
                             accept = false;  
                             warn = false;  
                         }  
-                        newText += '<span class="enhance" style="background-color:orange;border-radius:5px" title="这是增强词。收集近两周通过的公告筛选得到，可能含有违禁词，但准确性较高" onclick="alert(this.title)">';  
+                        newText += '<span class="enhance" style="background-color:orange;border-radius:5px" title="这是通用违禁词，大约30%可能性。收集近两周通过的公告筛选得到，可能含有违禁词，但准确性较高" onclick="alert(this.title)">';  
                         enhance = true;  
                     }
                 }  
@@ -220,6 +222,7 @@ function check_notice() {
             }  
         }  
         // 转义\n为<br>  
+        document.querySelector("#warn").style.display = "block";  
         var result = restoreInvalidChar(validInputStr, invalidStorage).replace(/\n/g, "<br>");  
         document.querySelector("#results").innerHTML = result;
         if (matchedList.length === 0) {  
