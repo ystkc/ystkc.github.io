@@ -24,7 +24,7 @@ description:  # this means to ignore newlines until "baseurl:"
   Notice Examiner is a web-based tool that allows you to quickly and easily search for and analyze prohibited words found in BCZ notices.
   如果找不到违禁词，请将你的公告发到邮箱：1612162886@qq.com
 baseurl: "/BCZ-Notice-Examiner" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://ystkc.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 
 # Build settings
