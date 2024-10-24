@@ -10,10 +10,10 @@ async function fetchJson(url) {
         });  
 }  
 
-const acceptWordsUrl = "/assets/accept_words.json";  
-const badWordsUrl = "/assets/bad_words.json";  
-const enhancedBadWordsUrl = "/assets/enhanced_bad_words.json";
-const warnWordsUrl = "/assets/warn_words.json"; 
+const acceptWordsUrl = "/BCZ-Notice-Examiner/assets/accept_words.json";  
+const badWordsUrl = "/BCZ-Notice-Examiner/assets/bad_words.json";  
+const enhancedBadWordsUrl = "/BCZ-Notice-Examiner/assets/enhanced_bad_words.json";
+const warnWordsUrl = "/BCZ-Notice-Examiner/assets/warn_words.json"; 
 
 let badWords, enhancedBadWords, acceptWords, warnWords;  
 let acceptWordsSet, warnWordsSet;  
