@@ -3,5 +3,9 @@ _site
 .jekyll-cache
 .jekyll-metadata
 vendor
+/node_modules/
 /examples/
+*.txt
 *.db
+patterns copy.json
+patterns.json

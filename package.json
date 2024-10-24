@@ -1,0 +1,37 @@
+{
+  "name": "bcz-notice-examiner",
+  "version": "1.0.0",
+  "description": "百词斩公告违禁词检测",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ystkc/BCZ-Notice-Examiner.git"
+  },
+  "keywords": [
+    "BCZ",
+    "baicizhan",
+    "notice",
+    "prohibited-words",
+    "百词斩",
+    "公告",
+    "违禁词"
+  ],
+  "author": "Cereanilla麦花",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ystkc/BCZ-Notice-Examiner/issues"
+  },
+  "homepage": "https://github.com/ystkc/BCZ-Notice-Examiner#readme",
+  "devDependencies": {
+    "gulp": "^5.0.0"
+  },
+  "dependencies": {
+    "bcz-notice-examiner": "file:"
+  }
+}
