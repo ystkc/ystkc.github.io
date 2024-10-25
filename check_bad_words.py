@@ -1,6 +1,19 @@
 import os
 import json
 import pyperclip
+import zipfile
+import re
+
+def encoder(text):
+    # 转化成bytearray类型
+    input = bytearray(text.encode())
+    
+    for i in range(len(input)):
+        # 将byte的后5位取反
+        input[i] = input[i] ^ 0b00011111
+    
+    return input
+
 
 enhanced = False
 if '--enhanced' in os.sys.argv:
@@ -31,9 +44,51 @@ if os.path.exists('accept_notice.txt'):
     with open("accept_notice.txt", "r", encoding="utf-8") as f:
         accept_notice = f.read()
 
-for check_word in bad_words:
+
+def cbw(check_word, accept_notice):
     if check_word in accept_notice:
-        print(f'{check_word} \033[33m已存在于被接受的通知中\033[0m')
+        result = max(accept_notice.index(check_word) - 10, 0)
+        return accept_notice[result:result+len(check_word)+20]
+    elif check_word[0] == '/': # 正则表达式
+        try:
+            result = re.search(check_word[1:-1], accept_notice)
+        except:
+            return "Invalid regular expression"
+        if result:
+            result = max(result.start() - 10, 0)
+            return accept_notice[result:result+len(check_word)+20]
+    elif '|' in check_word:
+        sub_words = check_word.split('|')
+        temp_accept_notice = accept_notice
+        valid = True
+        result = []
+        i = 0
+        while i < len(sub_words):
+            try:
+                sub_word = sub_words[i]
+                index = temp_accept_notice.index(sub_word)
+                # 提取到index_new位置
+                if i == 0 or '\\\\' not in temp_accept_notice[:index]: # 跨公告了，不算
+                    index = max(index - 10, 0)
+                    result.append(temp_accept_notice[index:index+len(check_word)+20])
+                    temp_accept_notice = temp_accept_notice[index+len(sub_word):]
+                    i += 1
+                else:
+                    # 重新查找上一个sub_word的位置
+                    i -= 1
+                    continue
+            except ValueError:
+                valid = False
+                break
+        if valid:
+            return '|'.join(result)
+    return ""
+
+
+for check_word in bad_words:
+    result = cbw(check_word, accept_notice)
+    if result != "":
+        print(f'{check_word} \033[33m已存在于被接受的通知中\033[0mresult:{result}')
         bad_words.remove(check_word)
         invalid_bad_words.append(check_word)
 
@@ -42,9 +97,9 @@ while check_word!= '#':
     if check_word in bad_words:
         print(f'{check_word} \033[32m已存在于黑名单中\033[0m')
     else:
-        if check_word in accept_notice:
-            print(f'{check_word} \033[33m已存在于被接受的通知中\033[0m')
-            invalid_bad_words.append(check_word)
+        result = cbw(check_word, accept_notice)
+        if result != "":
+            print(f'{check_word} \033[33m已存在于被接受的通知中\033[0mresult:{result}')
         else:
             bad_words.append(check_word)
             print(f'{check_word} 已添加到黑名单中')
@@ -56,10 +111,20 @@ input('已拷贝违禁词，换行继续拷贝失效违禁词')
 pyperclip.copy(' '.join(invalid_bad_words))
 
 if not enhanced:
-    if input('已拷贝结果。是否输出到bad_words.json？y/n') == 'y':
+    if input('已拷贝结果。是否输出到bad_words.bin和json？y/n') == 'y':
         with open("./assets/bad_words.json", "w", encoding="utf-8") as f:
-            f.write(json.dumps(bad_words, ensure_ascii=False))
+            json.dump(bad_words, f, ensure_ascii=False)
+        with open("./assets/bad_words.bin", "wb") as f:
+            f.write(encoder(json.dumps(bad_words, ensure_ascii=False)))
+        # 输出到zip文件
+        with zipfile.ZipFile('./assets/bad_words.bin.zip', 'w', zipfile.ZIP_DEFLATED) as zf:
+            zf.write('./assets/bad_words.bin', arcname='bad_words.bin')
 else:
-    if input('已拷贝结果。是否输出到\033[1;31menhanced_\033[0mbad_words.json？y/n') == 'y':
+    if input('已拷贝结果。是否输出到\033[1;31menhanced_\033[0mbad_words.bin和json？y/n') == 'y':
         with open("./assets/enhanced_bad_words.json", "w", encoding="utf-8") as f:
-            f.write(json.dumps(bad_words, ensure_ascii=False))
+            json.dump(bad_words, f, ensure_ascii=False)
+        with open("./assets/enhanced_bad_words.bin", "wb") as f:
+            f.write(encoder(json.dumps(bad_words, ensure_ascii=False)))
+        # 输出到zip文件
+        with zipfile.ZipFile('./assets/enhanced_bad_words.bin.zip', 'w', zipfile.ZIP_DEFLATED) as zf:
+            zf.write('./assets/enhanced_bad_words.bin', arcname='enhanced_bad_words.bin')
