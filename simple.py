@@ -19,11 +19,11 @@ while True:
 
 pos_list = []
 matched_list = []
-with open("bad_words.json", "r", encoding="utf-8") as f:
+with open("./assets/bad_words.json", "r", encoding="utf-8") as f:
     bad_words = json.load(f)
-with open("accept_words.json", "r", encoding="utf-8") as f:
+with open("./assets/accept_words.json", "r", encoding="utf-8") as f:
     accept_words = set(json.load(f))
-with open("warn_words.json", "r", encoding="utf-8") as f:
+with open("./assets/warn_words.json", "r", encoding="utf-8") as f:
     warn_words = set(json.load(f))
 
 

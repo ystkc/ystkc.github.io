@@ -7,9 +7,18 @@ vendor
 /examples/
 *.txt
 *.db
+*.lnk
+*.bin
 patterns copy.json
 patterns.json
 assets/enhanced_bad_words.json
 assets/accept_words.json
 assets/bad_words.json
 assets/warn_words.json
+assets/member_info_top_rate.bin.zip
+assets/js/member_info_top_rate.js
+assets/member/old/
+assets/member_name/old/
+*.csv
+*.xlsx
+/temp

@@ -18,7 +18,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: 百词斩公告违禁词检查工具
+title: Mai's Escapade
 email: 1612162886@qq.com
 description:  # this means to ignore newlines until "baseurl:"
   麦花喵~
@@ -30,6 +30,8 @@ url: "https://ystkc.github.io" # the base hostname & protocol for your site, e.g
 theme: minima
 plugins:
   - jekyll-feed
+# Use --no-watch to disable livereload
+
 
 # Exclude from processing.
 # The following items will not be processed, by default.
@@ -39,14 +41,35 @@ plugins:
 # Excluded items can be processed by explicitly listing the directories or
 # their entries' file path in the `include:` list.
 #
-# exclude:
-#   - .sass-cache/
-#   - .jekyll-cache/
-#   - gemfiles/
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules/
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+exclude:
+  - .sass-cache/
+  - .jekyll-cache/
+  - .jekyll-metadata/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - examples/
+  - temp/
+  - "*.txt"
+  - "*.db"
+  - "*.db-journal"
+  - "*.lnk"
+  - "*.bin"
+  - "*.py"
+  - "*.xlsx"
+  - "*.csv"
+  - "*.rar" # For archives. Assets should be in zip files.
+  - blacklist_rating.json
+  - patterns copy.json
+  - patterns.json
+  - assets/enhanced_bad_words.json
+  - assets/accept_words.json
+  - assets/bad_words.json
+  - assets/warn_words.json
+  - assets/member/old/
+  - assets/member_name/old/

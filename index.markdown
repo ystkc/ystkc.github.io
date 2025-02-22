@@ -14,10 +14,12 @@ body {
 <body>
 百词斩公告违禁词检查器<br>
 Created by 半只橙 & Cereanilla麦花<br>
+<div id="date" style="color:gray">构建中...</div>
 
-
-<textarea id="notice-input" placeholder="Paste your BCZ notice here..." style="width: 80%; height: 300px;"></textarea><br>
+<textarea id="notice-input" placeholder="Paste your BCZ notice here..." style="width: 80%; height: 300px;" disabled>正在加载词库...请稍候...</textarea><br>
+<br>
 <button id="search-btn" onclick="check_notice()">Check</button>
+<br>
 <input checked type="checkbox" id="enhanced-check">加强词典
 <div id="matches"></div>
 <div id="warn"><span style="color:red;" id="warn">本工具与百词斩官方无关，违禁词为用户收集，结果仅供参考</span><br>若仍然找不到违禁词，请将你的公告【全文】发送到1612162886@qq.com</div><br>
@@ -26,9 +28,7 @@ Created by 半只橙 & Cereanilla麦花<br>
 <span style="background-color:aquamarine;border-radius:5px" title="收集近两周通过的公告筛选得到，一般没问题" onclick="alert(this.title)">没问题的内容</span>
 <span style="background-color:yellow;border-radius:5px" title="收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">疑似违禁</span></div>
 <div id="results"></div>
-<!-- <div id="url" style="display:none;">{{ site.baseurl }}</div> -->
 <!-- jszip3.7.1 -->
 <script src="{{ site.baseurl }}/assets/js/jszip.min.js"></script>
 <script src="{{ site.baseurl }}/assets/js/script.js"></script>
-<!-- <a target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=p5aRlpWWkZWfn5Hn1taJxMjK" style="text-decoration:none;">找不到违禁词？点我</a> -->
 </body>
