@@ -1,0 +1,52 @@
+.sidebar {
+  position: fixed;
+  width: 200px;
+  height: 100%;
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  text-decoration: none;
+}
+.sidebar-group-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+hr {
+  border: none;
+  border-top: 1px solid white;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  height: 40px;
+}
+.sidebar-link {
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  color: white;
+  align-items: center;
+  padding-left: 10px;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+}
+.sidebar-link:visited {
+  color: white;
+}
+.cur {
+  background-color: #555;
+}
+.sidebar-link:hover {
+  background-color: grey;
+  text-decoration: none;
+  color: black;
+}
+.content {
+  margin-left: 240px;
+  padding: 20px;
+}

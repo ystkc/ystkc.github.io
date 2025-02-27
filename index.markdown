@@ -3,7 +3,9 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 # bundle exec jekyll serve --livereload
 
-layout: home
+layout: sidebar
+title: 百词斩公告违禁词检查器
+subtitle: Cereanilla麦花
 ---
 <meta charset="UTF-8">
 <style>

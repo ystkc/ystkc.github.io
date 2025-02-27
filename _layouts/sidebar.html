@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ page.title }} - {{ site.title }}</title>
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
+</head>
+<body>
+  <div class="sidebar" id="sidebar-container">
+    {% assign no_group_pages = "" | split: "," %}
+    {% assign grouped_pages = "" | split: "," %}
+    
+    {% for p in site.pages %}
+      {% unless p.path contains 'main' or p.path contains 'feed.xml' or p.path contains '404.html' %}
+        {% assign title_parts = p.title | split: " - " %}
+        {% if title_parts.size > 1 %}
+          {% assign group = title_parts[0] | strip %}
+          {% assign grouped_pages = grouped_pages | push: p %}
+        {% else %}
+          {% assign no_group_pages = no_group_pages | push: p %}
+        {% endif %}
+      {% endunless %}
+    {% endfor %}
+
+    <!-- {# 显示未分组内容 #} -->
+    {% for _page in no_group_pages %}
+      <a href="{{ _page.url | relative_url }}"
+       {% if _page.url == page.url %}class="sidebar-link cur"{% else %}class="sidebar-link"{% endif %} >
+        {{ _page.title }}
+      </a>
+    {% endfor %}
+    <hr>
+
+    <!-- {# 创建分组显示 #} -->
+    {% assign groups = grouped_pages | group_by_exp: "item", "item.title | split: ' - ' | first | strip" %}
+    {% for group in groups %}
+      <div class="sidebar-group">
+        <!-- group_name加一条横线 -->
+        <div class="sidebar-group-name">{{ group.name }}<hr></div>
+        {% for _page in group.items %}
+          {% assign display_title = _page.title | remove_first: group.name | remove_first: " - " %}
+          <a href="{{ _page.url | relative_url }}"
+            {% if _page.url == page.url %}class="sidebar-link cur"{% else %}class="sidebar-link"{% endif %} >
+            {{ display_title }}
+          </a>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <hr>
+  </div>
+
+  <div class="content">
+    {{ content }}
+  </div>
+</body>
+</html>
