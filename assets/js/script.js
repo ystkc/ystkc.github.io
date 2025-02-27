@@ -516,34 +516,9 @@ function check_notice() {
     if (matchedList.length === 0) {
       document.querySelector(
         "#matches"
-      ).innerHTML = `<div>未找到违禁词！<br>可加麦花qq帮找：<span class='copy-btn' style='background-color:pink;border-radius:5px'>1612162886</span>或微信<span class='copy-btn' style='background-color:pink;border-radius:5px'>lianwumaipian</span>(点击色块复制)<br>免费，有空就查，勿催哦<br>.<br></div>`;
-      document.querySelectorAll(".copy-btn").forEach(function (element) {
-        element.addEventListener("click", function () {
-          navigator.clipboard.writeText(element.innerText).then(
-            () => {
-              alert("复制成功awa");
-            },
-            (err) => {
-              // 尝试使用 execCommand 进行复制
-              try {
-                // 选中元素
-                var range = document.createRange();
-                range.selectNode(element);
-                var selection = window.getSelection();
-                selection.removeAllRanges();
-                selection.addRange(range);
-                // 执行复制
-                if (document.execCommand("copy")) alert("复制成功ω▼ω");
-                else alert("复制失败ωΔω请手动复制");
-                // 取消选中元素
-                selection.removeAllRanges();
-              } catch (e) {
-                alert("复制失败qwq请手动复制", e);
-              }
-            }
-          );
-        });
-      });
+      ).innerHTML = `<div>未找到违禁词！<br>可加麦花qq帮找：<span id='qq' style='background-color:pink;border-radius:5px'>1612162886</span>或微信<span id='wechat' style='background-color:pink;border-radius:5px'>lianwumaipian</span>(点击色块复制)<br>免费，有空就查，勿催哦<br>.<br></div>`;
+      addCopyButton(document.querySelector("#qq"));
+      addCopyButton(document.querySelector("#wechat"));
     } else {
       document.querySelector("#matches").innerHTML =
         "匹配到的词汇：" + matchedList.join(", ");

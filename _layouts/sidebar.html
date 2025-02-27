@@ -12,7 +12,7 @@
     {% assign grouped_pages = "" | split: "," %}
     
     {% for p in site.pages %}
-      {% unless p.path contains 'main' or p.path contains 'feed.xml' or p.path contains '404.html' %}
+      {% unless p.title == nil %}
         {% assign title_parts = p.title | split: " - " %}
         {% if title_parts.size > 1 %}
           {% assign group = title_parts[0] | strip %}
@@ -51,7 +51,97 @@
   </div>
 
   <div class="content">
-    {{ content }}
+    {% assign content_paragraphs = content | split: '<p>' %}
+    {% for paragraph in content_paragraphs %}
+      <div class="item">{{ paragraph }}</div>
+    {% endfor %}
   </div>
+  <br><br><br>
 </body>
+<script>
+  const fadeController = {
+      elements: [],
+      init() {
+        this.elements = [...document.querySelectorAll('.item')];
+        this.addListeners();
+        const vh = window.innerHeight;
+        this.elements.forEach(el => {
+          const rect = el.getBoundingClientRect();
+          const ratio = Math.min(
+            (vh - rect.top) / (vh + rect.height) + 0.5, 
+            1
+          );
+          
+          el.style.opacity = Math.max(ratio, 0);
+          el.style.transform = `translateY(${(1 - ratio) * 120}px)`;
+        });
+      },
+      addListeners() {
+        let lastTime = 0;
+        const throttle = 100; // ms
+        
+        window.addEventListener('scroll', () => {
+          const now = Date.now();
+          if(now - lastTime > throttle) {
+            requestAnimationFrame(this.updateElements.bind(this));
+            lastTime = now;
+          }
+        });
+      },
+      updateElements() {
+        const vh = window.innerHeight;
+        
+        this.elements.forEach(el => {
+          const rect = el.getBoundingClientRect();
+          const ratio = Math.min(
+            (vh - rect.top) / (vh + rect.height) + 0.5, 
+            1
+          );
+          
+          el.style.opacity = Math.max(ratio, 0);
+          el.style.transform = `translateY(${(1 - ratio) * 120}px)`;
+        });
+      }
+    };
+    function addCopyListener(element) {
+      element.addEventListener("click", function () {
+        navigator.clipboard.writeText(element.innerText).then(
+          () => {
+            alert("复制成功awa");
+          },
+          (err) => {
+            // 尝试使用 execCommand 进行复制
+            try {
+              // 选中元素
+              var range = document.createRange();
+              range.selectNode(element);
+              var selection = window.getSelection();
+              selection.removeAllRanges();
+              selection.addRange(range);
+              // 执行复制
+              if (document.execCommand("copy")) alert("复制成功ω▼ω");
+              else alert("复制失败ωΔω请手动复制");
+              // 取消选中元素
+              selection.removeAllRanges();
+            } catch (e) {
+              alert("复制失败qwq请手动复制", e);
+            }
+          }
+        );
+      });
+    }
+    function addCopyButton(element=null) {
+      if (element) {
+        addCopyListener(element);
+      } else {
+        document.querySelectorAll(".copy-btn").forEach(function (btn) {
+          addCopyListener(btn);
+        });
+      }
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+      fadeController.init();
+      addCopyButton();
+    });
+</script>
 </html>

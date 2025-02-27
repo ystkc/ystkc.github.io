@@ -22,7 +22,7 @@ title: Mai's Escapade
 email: 1612162886@qq.com
 description:  # this means to ignore newlines until "baseurl:"
   麦花喵~
-baseurl: "/BCZ-Notice-Examiner" # the subpath of your site, e.g. /blog
+baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://ystkc.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 
@@ -30,6 +30,7 @@ url: "https://ystkc.github.io" # the base hostname & protocol for your site, e.g
 theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-redirect-from
 # Use --no-watch to disable livereload
 
 

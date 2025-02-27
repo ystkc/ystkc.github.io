@@ -4,8 +4,10 @@
 # bundle exec jekyll serve --livereload
 
 layout: sidebar
-title: 百词斩公告违禁词检查器
+title: 公告违禁词检查
 subtitle: Cereanilla麦花
+redirect_from:
+  - /BCZ-Notice-Examiner/
 ---
 <meta charset="UTF-8">
 <style>
@@ -20,9 +22,9 @@ Created by 半只橙 & Cereanilla麦花<br>
 
 <textarea id="notice-input" placeholder="Paste your BCZ notice here..." style="width: 80%; height: 300px;" disabled>正在加载词库...请稍候...</textarea><br>
 <br>
-<button id="search-btn" onclick="check_notice()">Check</button>
+<button id="search-btn" class="btn" onclick="check_notice()">Check</button>
 <br>
-<input checked type="checkbox" id="enhanced-check">加强词典
+<input checked type="checkbox" style="width: 30px; height: 30px;" id="enhanced-check">加强词典
 <div id="matches"></div>
 <div id="warn"><span style="color:red;" id="warn">本工具与百词斩官方无关，违禁词为用户收集，结果仅供参考</span><br>若仍然找不到违禁词，请将你的公告【全文】发送到1612162886@qq.com</div><br>
 <div>检查结果：<span style="background-color:pink;border-radius:5px" title="根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">确定的违禁词汇</span>
