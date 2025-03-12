@@ -7,6 +7,25 @@
   padding: 20px;
   text-decoration: none;
 }
+#searchInput {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+.grey {
+  background: grey;
+  border-radius: 4px;
+  margin: 8px;
+}
+.result {
+  border-radius: 20px;
+  background-color: wheat;
+  padding: 20px;
+  margin-bottom: 20px;
+}
 .item {
   opacity: 0;
   font-size: 24px;
