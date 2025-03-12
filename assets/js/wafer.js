@@ -82,39 +82,14 @@ const blacklistStringAssets = "assets/black_list_string.bin.zip";
 
 let blacklist, blacklistString;
 let initStatus = 0;
-let autoPasteEnabled = true, historyPasteContent = "", userPermission = false;
 function checkPasteBoard() {
-  if (!autoPasteEnabled || document.visibilityState === "hidden" || document.hasFocus() === false) {
-    return;
-  }
-  if (!userPermission) {
-    if (confirm("是否允许进入页面时自动识别剪贴板中的id？"))
-      userPermission = true;
-    else {
-      autoPasteEnabled = false;
-      document.getElementById("autoPaste").checked = false;
-      return;
-    }
-  }
   navigator.clipboard.readText().then(text => {
     text = text.trim();
-    if (text === historyPasteContent) {
-      return;
-    }
-    historyPasteContent = text;
-    // 如果不是数字，则不处理
-    if (!/^\d+$/.test(text)) {
-      return;
-    }
-    document.getElementById("searchInput").value = text;
+    if (text === "" || !/^\d+$/.test(text)) { // 非数字或空字符串
+      text = document.getElementById("searchInput").value;
+    } else document.getElementById("searchInput").value = text;
     search(text);
   });
-}
-function toggleAutoPaste() {
-  autoPasteEnabled = !autoPasteEnabled;
-  if (autoPasteEnabled) {
-    checkPasteBoard();
-  }
 }
 async function init() {
   url = window.location.origin + '/';
@@ -150,15 +125,9 @@ window.onload = async function () {
           document.getElementById("searchBtn").click();
         }
     });
-    setTimeout(() => {
-      document.addEventListener("visibilitychange", checkPasteBoard);
-      window.addEventListener("focus", checkPasteBoard);
-      checkPasteBoard();
-    }, 500);
   }
 };
 function search(input) {
-    historyPasteContent = input;
     document.getElementById("result").innerHTML = "正在查询...";
     if (input === "") {
         document.getElementById("result").innerHTML = "请输入要查询的id！";
