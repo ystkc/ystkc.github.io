@@ -82,6 +82,40 @@ const blacklistStringAssets = "assets/black_list_string.bin.zip";
 
 let blacklist, blacklistString;
 let initStatus = 0;
+let autoPasteEnabled = true, historyPasteContent = "", userPermission = false;
+function checkPasteBoard() {
+  if (!autoPasteEnabled || document.visibilityState === "hidden" || document.hasFocus() === false) {
+    return;
+  }
+  if (!userPermission) {
+    if (confirm("是否允许进入页面时自动识别剪贴板中的id？"))
+      userPermission = true;
+    else {
+      autoPasteEnabled = false;
+      document.getElementById("autoPaste").checked = false;
+      return;
+    }
+  }
+  navigator.clipboard.readText().then(text => {
+    text = text.trim();
+    if (text === historyPasteContent) {
+      return;
+    }
+    historyPasteContent = text;
+    // 如果不是数字，则不处理
+    if (!/^\d+$/.test(text)) {
+      return;
+    }
+    document.getElementById("searchInput").value = text;
+    search(text);
+  });
+}
+function toggleAutoPaste() {
+  autoPasteEnabled = !autoPasteEnabled;
+  if (autoPasteEnabled) {
+    checkPasteBoard();
+  }
+}
 async function init() {
   url = window.location.origin + '/';
   [blacklist, blacklistString] = await Promise.all([
@@ -101,13 +135,14 @@ window.onload = async function () {
   if (initStatus === -1 || initStatus === 0) {
     document.getElementById("date").innerHTML +=
       "词库加载失败！请刷新网页 或 更换浏览器。<br>";
+      alert("词库加载失败！请刷新网页 或 更换浏览器。");
   } else {
     document.getElementById("searchInput").value = "";
     document.getElementById("searchInput").disabled = false;
     document.getElementById("searchInput").focus();
     document.getElementById("searchBtn").disabled = false;
     
-    document.getElementById("date").textContent = blacklistString[0];
+    document.getElementById("date").textContent = blacklistString[0] + ',共' + Object.keys(blacklist).length + '条数据';
     // 绑定enter事件
     document.addEventListener("keyup", function (event) {
         if (event.key === 'Enter') {
@@ -115,42 +150,47 @@ window.onload = async function () {
           document.getElementById("searchBtn").click();
         }
     });
+    setTimeout(() => {
+      document.addEventListener("visibilitychange", checkPasteBoard);
+      window.addEventListener("focus", checkPasteBoard);
+      checkPasteBoard();
+    }, 500);
   }
 };
-function search() {
-    const input = document.getElementById("searchInput").value.trim();
+function search(input) {
+    historyPasteContent = input;
+    document.getElementById("result").innerHTML = "正在查询...";
     if (input === "") {
-        alert("请输入要搜索的id！");
+        document.getElementById("result").innerHTML = "请输入要查询的id！";
         return;
     }
     const results = blacklist[input];
-    if (results === undefined) {
-        alert("未找到该id！");
-        return;
-    } else {
-        let result_str = "";
-        // id: [nickname, date(timestamp), reason, recorder, remark, last_edit_time(timestamp), last_editor, first_editor]
-        for (let result of results) {
-          let reason = "";
-          result_str += "<div class='result'>";
-          for (let index of result[2]) {
-              reason += "<span class='grey'>" + blacklistString[index] + "</span>";
+    setTimeout(() => {
+      if (results === undefined) {
+          document.getElementById("result").innerHTML = "未找到该id: " + input;
+          return;
+      } else {
+          let result_str = "";
+          // id: [nickname, date(timestamp), reason, recorder, remark, last_edit_time(timestamp), last_editor, first_editor]
+          for (let result of results) {
+            let reason = "";
+            result_str += "<div class='result'>";
+            for (let index of result[2]) {
+                reason += "<span class='grey'>" + blacklistString[index] + "</span>";
+            }
+            result_str += `
+                <p>id: ${input}</p>
+                <p>昵称: ${blacklistString[result[0]]}</p>
+                <p>记录日期: ${new Date(result[1]*1000).toLocaleString()}</p>
+                <p>原因: ${reason}</p>
+                <p>记录人: ${blacklistString[result[3]]}</p>
+                <p>备注: ${blacklistString[result[4]]}</p>
+                <p>最后编辑时间: ${new Date(result[5]*1000).toLocaleString()}</p>
+                <p>最后编辑人: ${blacklistString[result[6]]}</p>
+                <p>首次编辑人: ${blacklistString[result[7]]}</p>
+            </div>`;
           }
-          result_str += `
-              <p>id: ${input}</p>
-              <p>昵称: ${blacklistString[result[0]]}</p>
-              <p>记录日期: ${new Date(result[1]*1000).toLocaleString()}</p>
-              <p>原因: ${reason}</p>
-              <p>记录人: ${blacklistString[result[3]]}</p>
-              <p>备注: ${blacklistString[result[4]]}</p>
-              <p>最后编辑时间: ${new Date(result[5]*1000).toLocaleString()}</p>
-              <p>最后编辑人: ${blacklistString[result[6]]}</p>
-              <p>首次编辑人: ${blacklistString[result[7]]}</p>
-          </div>`;
-        }
-        document.getElementById("result").innerHTML = result_str;
-    }
-    
-
-
+          document.getElementById("result").innerHTML = result_str;
+      }
+    }, 500);
 }
