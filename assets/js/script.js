@@ -328,7 +328,7 @@ function check_notice() {
               enhance = false;
             }
             newText +=
-              '<span class="bad" style="background-color:pink;border-radius:5px" title="95%可能是违禁词。根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">';
+              '<span class="bad pink" title="95%可能是违禁词。根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">';
             bad = true;
           } else if (minChar === "c" && !accept) {
             if (bad || warn || enhance) {
@@ -338,7 +338,7 @@ function check_notice() {
               enhance = false;
             }
             newText +=
-              '<span class="accept" style="background-color:aquamarine;border-radius:5px" title="95%可能是没问题的内容。收集近两周通过的公告筛选得到，一般没问题" onclick="alert(this.title)">';
+              '<span class="accept aquamarine" title="95%可能是没问题的内容。收集通过的公告筛选得到，一般没问题" onclick="alert(this.title)">';
             accept = true;
           } else if (minChar === "d" && !warn) {
             if (bad || accept || enhance) {
@@ -347,7 +347,7 @@ function check_notice() {
               accept = false;
             }
             newText +=
-              '<span class="warn" style="background-color:yellow;border-radius:5px" title="这是疑似违禁词，大约10%可能性。收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">';
+              '<span class="warn yellow" title="这是疑似违禁词，大约10%可能性。收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">';
             warn = true;
           } else if (minChar === "a" && !enhance) {
             if (bad || accept || warn) {
@@ -357,7 +357,7 @@ function check_notice() {
               warn = false;
             }
             newText +=
-              '<span class="enhance" style="background-color:orange;border-radius:5px" title="这是通用违禁词，大约30%可能性。收集坚果墙等等通用违禁词库，范围广但容易误报" onclick="alert(this.title)">';
+              '<span class="enhance orange" title="这是通用违禁词，大约30%可能性。收集坚果墙等等通用违禁词库，范围广但容易误报" onclick="alert(this.title)">';
             enhance = true;
           } else if (minChar === "z" && (bad || accept || warn || enhance)) {
             newText += "</span>";

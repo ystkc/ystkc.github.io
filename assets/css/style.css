@@ -15,14 +15,40 @@
   border: 2px solid #ccc;
   border-radius: 4px;
 }
-.grey {
-  background: grey;
-  border-radius: 4px;
-  margin: 8px;
+.pink {
+  background-color:pink;
+  border-radius:5px;
+}
+.aquamarine {
+  background-color:aquamarine;
+  border-radius:5px;
+}
+.skyblue {
+  background-color:skyblue;
+  border-radius:5px;
+}
+.orange {
+  background-color:orange;
+  border-radius:5px;
+}
+.violet {
+  background-color:violet;
+  border-radius:5px;
+}
+.yellow {
+  background-color:yellow;
+  border-radius:5px;
+}
+.wheat { /* 背景色-1 */
+  background-color:wheat;
+  border-radius:5px;
+}
+.lightgrey { /* 背景色-2 */
+  background-color: lightgrey;
+  border-radius:5px;
 }
 .result {
   border-radius: 20px;
-  background-color: wheat;
   padding: 20px;
   margin-bottom: 20px;
 }

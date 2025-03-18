@@ -81,6 +81,16 @@
         el.style.transform = `translateY(${(1 - ratio) * 120}px)`;
       });
     },
+    reinit() {
+      this.elements = [...document.querySelectorAll('.item')];
+      const vh = window.innerHeight;
+      this.elements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const ratio = Math.min((vh - rect.top) / (vh + rect.height) + 0.5, 1);
+        el.style.opacity = Math.max(ratio, 0);
+        el.style.transform = `translateY(${(1 - ratio) * 120}px)`;
+      });
+    },
     addListeners() {
       let lastTime = 0;
       const throttle = 100; // ms
