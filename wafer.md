@@ -15,6 +15,5 @@ redirect_from:
 <!-- jszip3.7.1 -->
 <script src="{{ site.baseurl }}/assets/js/jszip.min.js"></script>
 <script src="{{ site.baseurl }}/assets/js/wafer.js"></script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/3.0.0/clipboard.min.js"></script> -->
-<!-- <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <span id="busuanzi_container_page_pv">本页总访问量<span id="busuanzi_value_page_pv"></span>次</span>

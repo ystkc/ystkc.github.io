@@ -91,54 +91,38 @@ function processText(text) {
 }
 
 
-
-// 测试方案2
-function fallbackPasteMethod() {
-  
+function checkPasteBoard() {
+  if (document.getElementById("searchInput").value !== "") {
+    processText("");
+  }
+  // 尝试从剪贴板获取内容
   try {
-    const text = window.clipboardData.getData('text');
-    if (text) {
-      search(text);
-    } else throw new Error("Empty");
-  } catch (err) {
-    alert(`E01(${err.message}) 请使用最新版 Chrome/Edge 浏览器，或手动粘贴内容`);
+    // 现代浏览器方案
+    navigator.clipboard.readText().then((text) => {
+      processText(text);
+    });
+  } catch (err1) {
     try {
-      const tempElem = document.createElement('textarea');
-      tempElem.style.position = 'fixed';
-      document.body.appendChild(tempElem);
-      tempElem.focus();
-  
-      document.execCommand('paste');
-      const text = tempElem.value.trim();
+      // 替代方案1
+      const text = window.clipboardData.getData('text');
       if (text) {
         search(text);
-      } else throw new Error("Empty");
-    } catch (err) {
-      alert(`E02(${err.message}) 请使用最新版 Chrome/Edge 浏览器，或手动粘贴内容`);
-    } finally {
-      document.body.removeChild(tempElem);
+      } else throw new Error(`Empty`);
+    } catch (err2) {
+      try {
+        // 替代方案2
+        const searchInput = document.getElementById("searchInput");
+        searchInput.focus();
+        document.execCommand('paste');
+        const text = searchInput.value.trim();
+        if (text) {
+          search(text);
+        } else throw new Error("Empty"); // 没有办法了，提示用户手动粘贴内容
+      } catch (err3) {
+        alert(`您的浏览器不支持访问剪贴板，请手动粘贴内容 或用新版Chrome/Edge浏览器 (${err1.message}|${err2.message}|${err3.message})`);
+        processText("");
+      }
     }
-  }
-}
-function checkPasteBoard() {
-  try {
-    if (navigator.clipboard) {
-      // 现代浏览器方案
-      navigator.clipboard.readText().then((text) => {
-        alert('Method 2: success');
-        processText(text);
-      }).catch(() => {
-        alert('Method 2: failed, falling back to manual paste');
-        fallbackPasteMethod();
-      });
-    } else {
-      alert('Method 2: failed, browser does not support clipboard API');
-      // 旧版浏览器降级
-      fallbackPasteMethod();
-    }
-  } catch (err) {
-    alert(`E03(${err.message}) 请手动粘贴内容`);
-    processText("");
   }
 }
 
