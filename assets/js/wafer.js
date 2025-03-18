@@ -82,14 +82,74 @@ const blacklistStringAssets = "assets/black_list_string.bin.zip";
 
 let blacklist, blacklistString;
 let initStatus = 0;
+function processText(text) {
+  text = text.trim();
+  if (text === "" || !/^\d+$/.test(text)) { // 非数字或空字符串
+    text = document.getElementById("searchInput").value;
+  } else document.getElementById("searchInput").value = text;
+  search(text);
+}
+
+
+
+// 测试方案2
+function fallbackPasteMethod() {
+  
+  try {
+    const text = window.clipboardData.getData('text');
+    if (text) {
+      search(text);
+    } else throw new Error("Empty");
+  } catch (err) {
+    alert(`E01(${err.message}) 请使用最新版 Chrome/Edge 浏览器，或手动粘贴内容`);
+    try {
+      const tempElem = document.createElement('textarea');
+      tempElem.style.position = 'fixed';
+      document.body.appendChild(tempElem);
+      tempElem.focus();
+  
+      document.execCommand('paste');
+      const text = tempElem.value.trim();
+      if (text) {
+        search(text);
+      } else throw new Error("Empty");
+    } catch (err) {
+      alert(`E02(${err.message}) 请使用最新版 Chrome/Edge 浏览器，或手动粘贴内容`);
+    } finally {
+      document.body.removeChild(tempElem);
+    }
+  }
+}
 function checkPasteBoard() {
-  navigator.clipboard.readText().then(text => {
-    text = text.trim();
-    if (text === "" || !/^\d+$/.test(text)) { // 非数字或空字符串
-      text = document.getElementById("searchInput").value;
-    } else document.getElementById("searchInput").value = text;
-    search(text);
-  });
+  try {
+    if (navigator.clipboard) {
+      // 现代浏览器方案
+      navigator.clipboard.readText().then((text) => {
+        alert('Method 2: success');
+        processText(text);
+      }).catch(() => {
+        alert('Method 2: failed, falling back to manual paste');
+        fallbackPasteMethod();
+      });
+    } else {
+      alert('Method 2: failed, browser does not support clipboard API');
+      // 旧版浏览器降级
+      fallbackPasteMethod();
+    }
+  } catch (err) {
+    alert(`E03(${err.message}) 请手动粘贴内容`);
+    processText("");
+  }
+}
+
+
+
+
+function handlePaste(e) {
+  const pastedText = e.clipboardData.getData('text/plain');
+  if (pastedText) {
+    processText(pastedText);
+  }
 }
 async function init() {
   url = window.location.origin + '/';
