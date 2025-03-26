@@ -37,6 +37,7 @@ else:
         with open('./assets/enhanced_bad_words.json', 'r', encoding='utf-8') as f:
             bad_words = json.load(f)
 print(bad_words)
+print(len(bad_words))
 if os.path.exists('bad_words.txt'):
     with open('bad_words.txt', 'r', encoding='utf-8') as f:
         bad_words.extend(f.read().splitlines())
@@ -130,7 +131,7 @@ while check_word!= '#':
     no_check = False
     if check_word[0] == '!':
         no_check = True
-    if check_word[0] == '?':
+    elif check_word[0] == '?':
         check_word = check_word[1:]
         for i in range(len(bad_words)):
             if bad_words[i][0] == '!' and bad_words[i][1:] == check_word:
@@ -139,18 +140,26 @@ while check_word!= '#':
                 break
         else:
             print(f'{check_word} \033[31m不存在\033[0m')
-    if check_word in bad_words:
-        print(f'{check_word} \033[32m已存在于黑名单中\033[0m')
+    elif check_word[0] == '-':
+        check_word = check_word[1:]
+        try:
+            bad_words.remove(check_word)
+            print(f'{check_word} \033[32m已从黑名单中移除\033[0m')
+        except ValueError:
+            print(f'{check_word} \033[31m不存在\033[0m')
     else:
-        result = cbw(check_word, accept_notice)
-        if result != "":
-            print(f'{check_word} \033[33m已存在于被接受的通知中\033[0mresult:{result}')
-            if no_check:
+        if check_word in bad_words:
+            print(f'{check_word} \033[32m已存在于黑名单中\033[0m')
+        else:
+            result = cbw(check_word, accept_notice)
+            if result != "":
+                print(f'{check_word} \033[33m已存在于被接受的通知中\033[0mresult:{result}')
+                if no_check:
+                    bad_words.append(check_word)
+                    print(f'{check_word} 已添加到黑名单中')
+            else:
                 bad_words.append(check_word)
                 print(f'{check_word} 已添加到黑名单中')
-        else:
-            bad_words.append(check_word)
-            print(f'{check_word} 已添加到黑名单中')
     check_word = input('请输入要检查/添加的词，一行一个#退出：')
 
 print(bad_words)
