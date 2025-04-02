@@ -22,3 +22,5 @@ assets/member_name/old/
 *.csv
 *.xlsx
 /temp
+*.rar
+category.py
