@@ -65,6 +65,10 @@ exclude:
   - "*.xlsx"
   - "*.csv"
   - "*.rar" # For archives. Assets should be in zip files.
+  - "*.sh"
+  - l_BaseKit_p_2024.2.1.100_offline/
+  - intel-extension-for-tensorflow/
+  - tdf_env/
   - blacklist_rating.json
   - patterns copy.json
   - patterns.json

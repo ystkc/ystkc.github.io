@@ -14,6 +14,7 @@ patterns.json
 assets/enhanced_bad_words.json
 assets/accept_words.json
 assets/bad_words.json
+/tdf_env/
 assets/warn_words.json
 assets/member_info_top_rate.bin.zip
 assets/js/member_info_top_rate.js
@@ -24,3 +25,6 @@ assets/member_name/old/
 /temp
 *.rar
 category.py
+/l_BaseKit_p_2024.2.1.100_offline
+*.sh
+/intel-extension-for-tensorflow
