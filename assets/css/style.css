@@ -7,6 +7,10 @@
   padding: 20px;
   text-decoration: none;
 }
+.footer {
+  text-align: center;
+  color: #999;
+}
 #searchInput {
   width: 100%;
   padding: 12px 20px;
@@ -53,6 +57,10 @@
   margin-bottom: 20px;
 }
 .item {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   opacity: 0;
   font-size: 24px;
   transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1),

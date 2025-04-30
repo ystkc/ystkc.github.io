@@ -5,6 +5,7 @@ subtitle: Cereanilla麦花
 ---
 
 <div>麦花，也就是莲雾麦片和花卷<br>你可以通过个人QQ: <span class="copy-btn aquamarine">1612162886</span>或微信：<span class="copy-btn aquamarine">lianwumaipian</span> 找到班班（点击色块复制）</div>
+<br>招人上段方法、公告过审方法、申请授权合作、代打卡……添加班班即可解锁～
 <br>班长个人qq二维码<br><img src="/assets/img/00189-712330916.jpg" style="width: 260px;height: 260px;">
 
 
