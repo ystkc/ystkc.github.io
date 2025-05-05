@@ -42,7 +42,7 @@
     {% assign groups = grouped_pages | group_by_exp: "item", "item.title | split: ' - ' | first | strip" %}
     {% for group in groups %}
       <div class="sidebar-group">
-        <div class="sidebar-group-name">{{ group.name }}<hr></div>
+        <div class="sidebar-group-name lightgrey">{{ group.name }}<hr></div>
         {% for _page in group.items %}
           {% assign display_title = _page.title | remove_first: group.name | remove_first: " - " %}
           <a href="{{ _page.url | relative_url }}"
