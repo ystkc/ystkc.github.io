@@ -54,6 +54,7 @@
       <hr>
     {% endfor %}
     <hr>
+    <br><br><br><br><br>
   </div>
 
   <div class="content">
@@ -71,8 +72,9 @@
     {% endfor %}
   </div>
 <div id="vue-app"></div>
-<br><br><br><br><br><br><br><br><br><br><br><br>
-<div class="footer">没有更多啦<br><br>Cereanilla麦花</div>
+<br><br><br><br><br><br><br><br><br><br>
+<div class="fixed-footer">ystkc.github.io<br><br>Cereanilla麦花</div>
+<div class="footer">没有更多啦<br><br><br><br><br><br></div>
 </body>
 <script src="{{ '/assets/js/bundle.js' | relative_url }}"></script>
 <script type="text/javascript" src="https://js.users.51.la/21949163.js"></script>
@@ -85,7 +87,7 @@
       const vh = window.innerHeight;
       this.elements.forEach(el => {
         const rect = el.getBoundingClientRect();
-        const ratio = Math.min((vh - rect.top) / (vh + rect.height) + 0.5, 1);
+        const ratio = Math.min((vh - rect.top) / (vh + rect.height) + 0.7, 1);
         el.style.opacity = Math.max(ratio, 0);
         el.style.transform = `translateY(${(1 - ratio) * 120}px)`;
       });
@@ -95,7 +97,7 @@
       const vh = window.innerHeight;
       this.elements.forEach(el => {
         const rect = el.getBoundingClientRect();
-        const ratio = Math.min((vh - rect.top) / (vh + rect.height) + 0.5, 1);
+        const ratio = Math.min((vh - rect.top) / (vh + rect.height) + 0.7, 1);
         el.style.opacity = Math.max(ratio, 0);
         el.style.transform = `translateY(${(1 - ratio) * 120}px)`;
       });
@@ -117,7 +119,7 @@
       
       this.elements.forEach(el => {
         const rect = el.getBoundingClientRect();
-        const ratio = Math.min((vh - rect.top) / (vh + rect.height) + 0.5, 1);
+        const ratio = Math.min((vh - rect.top) / (vh + rect.height) + 0.7, 1);
         el.style.opacity = Math.max(ratio, 0);
         el.style.transform = `translateY(${(1 - ratio) * 120}px)`;
       });
