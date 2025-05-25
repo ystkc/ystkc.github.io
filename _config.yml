@@ -66,6 +66,7 @@ exclude:
   - "*.csv"
   - "*.rar" # For archives. Assets should be in zip files.
   - "*.sh"
+  - "*.bat"
   - l_BaseKit_p_2024.2.1.100_offline/
   - intel-extension-for-tensorflow/
   - tdf_env/
