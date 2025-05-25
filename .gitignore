@@ -28,3 +28,4 @@ category.py
 /l_BaseKit_p_2024.2.1.100_offline
 *.sh
 /intel-extension-for-tensorflow
+*.disabled
