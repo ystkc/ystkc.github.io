@@ -126,7 +126,8 @@ window.onload = async function () {
     document.querySelector("#notice-input").disabled = false;
     document.querySelector("#notice-input").value = "";
     document.querySelector("#results").innerHTML += "初始化完成！<br>";
-    document.querySelector("#date").innerHTML = acceptWords[0];
+    document.querySelector("#date").innerHTML =
+      acceptWords[0] + ",共收录" + badWords.length + "个违禁词";
     document.querySelector("#notice-input").focus();
   }
 };
@@ -208,7 +209,7 @@ function check_notice() {
           // 如果被正则表达式匹配，则执行
           setInvalidStorage(invalidStorage, position, char);
           i++; // 继续检查下一个字符
-          if (doubleChar) position --; // 双字符的一点小问题
+          if (doubleChar) position--; // 双字符的一点小问题
         } else if (char in replaceMap) {
           newText += replaceMap[char];
           setInvalidStorage(invalidStorage, position, char);
