@@ -517,7 +517,7 @@ function check_notice() {
     if (matchedList.length === 0) {
       document.querySelector(
         "#matches"
-      ).innerHTML = `<div>未找到违禁词！<br>可加麦花qq帮找：<span id='qq' style='background-color:pink;border-radius:5px'>1612162886</span>或微信<span id='wechat' style='background-color:pink;border-radius:5px'>lianwumaipian</span>(点击色块复制)<br>免费，有空就查，勿催哦<br>.<br></div>`;
+      ).innerHTML = `<div>抱歉，未找到违禁词！<br>建议少更暧昧或者恐怖内容，否则很难过审</div>`;
       addCopyButton(document.querySelector("#qq"));
       addCopyButton(document.querySelector("#wechat"));
     } else {
