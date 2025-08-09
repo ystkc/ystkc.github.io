@@ -1,7 +1,7 @@
 ---
 layout: sidebar
 title: 麦花捞 - 如何快速上王者？
-subtitle: 别，高数我是真捞不了
+subtitle: 百词斩打工人速成手册
 ---
 
 上王者，讲究天时地利人和（不是<br><br>
