@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 麦花捞 - 什么人最受王者班长欢迎？
+title: 1.麦花捞 - 什么人最受王者班长欢迎？
 subtitle: 当然是麦花鸽了（逃）
 ---
 

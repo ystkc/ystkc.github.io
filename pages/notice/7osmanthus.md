@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 麦花的小班公告 - 天接云涛连晓雾
+title: 2.麦花的小班公告 - 天接云涛连晓雾
 subtitle: 麦月记
 ---
 

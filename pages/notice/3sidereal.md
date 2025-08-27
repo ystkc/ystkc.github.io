@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 麦花的小班公告 - 霜沐星辰
+title: 2.麦花的小班公告 - 霜沐星辰
 subtitle: Cereanilla麦花
 ---
 

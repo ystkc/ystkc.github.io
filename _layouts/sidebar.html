@@ -38,8 +38,9 @@
     {% endfor %}
     <hr>
 
-    <!-- {# 创建分组显示 #} -->
-    {% assign groups = grouped_pages | group_by_exp: "item", "item.title | split: ' - ' | first | strip" %}
+    <!-- {# 创建分组显示，按照标题排序 #} -->
+    {% assign groups_init = grouped_pages | group_by_exp: "item", "item.title | split: ' - ' | first | strip" %}
+    {% assign groups = groups_init | sort: "name" %}
     {% for group in groups %}
       <div class="sidebar-group">
         <div class="sidebar-group-name lightgrey">{{ group.name }}<hr></div>
@@ -69,7 +70,7 @@
     {% endif %}
     {% assign content_paragraphs = content | split: '<p>' %}
     {% for paragraph in content_paragraphs %}
-      <div class="item">{{ paragraph }}</div>
+      <div {% if page.url contains "notice" or page.url contains "essay" %}class="item nocopy" {% else %}class="item"{% endif %}>{{ paragraph }}</div>
     {% endfor %}
   </div>
 <div id="vue-app"></div>

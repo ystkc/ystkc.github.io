@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 麦花的小班公告 - 老师！捞不动了
+title: 2.麦花的小班公告 - 老师！捞不动了
 subtitle: Cereanilla麦花
 ---
 

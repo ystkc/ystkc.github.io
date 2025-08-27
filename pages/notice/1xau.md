@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 麦花的小班公告 - 相山秋雨
+title: 2.麦花的小班公告 - 相山秋雨
 subtitle: Cereanilla麦花
 ---
 

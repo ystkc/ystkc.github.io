@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 麦花的小班公告 - 恶作剧
+title: 2.麦花的小班公告 - 恶作剧
 subtitle: Cereanilla麦花
 ---
 2024.12

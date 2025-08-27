@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 麦花捞 - 如何快速上王者？
+title: 1.麦花捞 - 如何快速上王者？
 subtitle: 百词斩打工人速成手册
 ---
 

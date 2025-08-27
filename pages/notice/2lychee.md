@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 麦花的小班公告 - 立志做大事，不要做大官
+title: 2.麦花的小班公告 - 立志做大事，不要做大官
 subtitle: Cereanilla麦花
 ---
 
