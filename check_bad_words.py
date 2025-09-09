@@ -166,9 +166,10 @@ print(bad_words)
 pyperclip.copy(' '.join(bad_words))
 input('已拷贝违禁词，换行继续拷贝失效违禁词')
 pyperclip.copy(' '.join(invalid_bad_words))
+input('已拷贝失效违禁词，换行继续输出到文件')
 
 if not enhanced:
-    if input('已拷贝结果。是否输出到bad_words.bin和json？y/n') == 'y':
+    # if input('已拷贝结果。是否输出到bad_words.bin和json？y/n') == 'y':
         with open("./assets/bad_words.json", "w", encoding="utf-8") as f:
             json.dump(bad_words, f, ensure_ascii=False)
         # 去除叹号
@@ -181,7 +182,7 @@ if not enhanced:
         with zipfile.ZipFile('./assets/bad_words.bin.zip', 'w', zipfile.ZIP_DEFLATED) as zf:
             zf.write('./assets/bad_words.bin', arcname='bad_words.bin')
 else:
-    if input('已拷贝结果。是否输出到\033[1;31menhanced_\033[0mbad_words.bin和json？y/n') == 'y':
+    # if input('已拷贝结果。是否输出到\033[1;31menhanced_\033[0mbad_words.bin和json？y/n') == 'y':
         with open("./assets/enhanced_bad_words.json", "w", encoding="utf-8") as f:
             json.dump(bad_words, f, ensure_ascii=False)
         # 去除叹号

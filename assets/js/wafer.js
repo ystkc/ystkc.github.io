@@ -201,7 +201,7 @@ function display_cnt(result_cnt, total_cnt, timeStart) {
   )}ms`;
 }
 function search(input) {
-  // string
+  input = input.trim();
   if (currentSearchText === input) return; // 避免重复搜索
   document.getElementById("result").innerHTML = "正在查询...";
   if (input === "") {

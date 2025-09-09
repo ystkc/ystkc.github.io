@@ -18,7 +18,7 @@
     {% assign grouped_pages = "" | split: "," %}
     
     {% for p in site.pages %}
-      {% unless p.title == nil %}
+      {% unless p.title == nil or p.subtitle == nil %}
         {% assign title_parts = p.title | split: " - " %}
         {% if title_parts.size > 1 %}
           {% assign group = title_parts[0] | strip %}

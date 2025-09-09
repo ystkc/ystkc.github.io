@@ -1,6 +1,7 @@
 ---
 layout: sidebar
 title: About
+subtitle: 麦花喵窝
 permalink: /about/
 ---
 
