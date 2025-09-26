@@ -8,75 +8,80 @@
   <meta name="360-site-verification" content="1ac710edca7c0492c0bb15f5764bc000" />
   <title>{{ page.title }}{{ page.subtitle }} - {{ site.title }}</title>
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-  <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
+  <!-- <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}"> -->
   <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
   <script>LA.init({id:"3LTNMctPRNmiv7MN",ck:"3LTNMctPRNmiv7MN"})</script>
 </head>
 <body>
-  <div class="sidebar" id="sidebar-container">
-    {% assign no_group_pages = "" | split: "," %}
-    {% assign grouped_pages = "" | split: "," %}
-    
-    {% for p in site.pages %}
-      {% unless p.title == nil or p.subtitle == nil %}
-        {% assign title_parts = p.title | split: " - " %}
-        {% if title_parts.size > 1 %}
-          {% assign group = title_parts[0] | strip %}
-          {% assign grouped_pages = grouped_pages | push: p %}
-        {% else %}
-          {% assign no_group_pages = no_group_pages | push: p %}
-        {% endif %}
-      {% endunless %}
-    {% endfor %}
+  <div class="island-container">
+    <!-- 在body内添加 -->
+      <button class="menu-toggle" aria-label="Toggle menu">☰</button>
+      <div class="sidebar-overlay"></div>
+      <div class="sidebar" id="sidebar-container">
+          {% assign no_group_pages = "" | split: "," %}
+          {% assign grouped_pages = "" | split: "," %}
+          {% for p in site.pages %}
+              {% unless p.title == nil or p.subtitle == nil %}
+              {% assign title_parts = p.title | split: " - " %}
+                  {% if title_parts.size > 1 %} 
+                      {% assign group = title_parts[0] | strip %} 
+                      {% assign grouped_pages = grouped_pages | push: p %} 
+                  {% else %} 
+                      {% assign no_group_pages = no_group_pages | push: p %} 
+                  {% endif %} 
+              {% endunless %} 
+          {% endfor %}
 
-    <!-- {# 显示未分组内容 #} -->
-    {% for _page in no_group_pages %}
-      <a href="{{ _page.url | relative_url }}"
-       {% if _page.url == page.url %}class="sidebar-link cur"{% else %}class="sidebar-link"{% endif %} >
-        {{ _page.title }}
-      </a>
-    {% endfor %}
-    <hr>
+          <!-- {# 显示未分组内容 #} -->
+          {% for _page in no_group_pages %} 
+              <a href="{{ _page.url | relative_url}}" {% if _page.url==page.url %}class="sidebar-link cur" {% else %}class="sidebar-link" {% endif %}> {{ _page.title }} </a>
+          {% endfor %}
+          <hr />
 
-    <!-- {# 创建分组显示，按照标题排序 #} -->
-    {% assign groups_init = grouped_pages | group_by_exp: "item", "item.title | split: ' - ' | first | strip" %}
-    {% assign groups = groups_init | sort: "name" %}
-    {% for group in groups %}
-      <div class="sidebar-group">
-        <div class="sidebar-group-name lightgrey">{{ group.name }}<hr></div>
-        {% for _page in group.items %}
-          {% assign display_title = _page.title | remove_first: group.name | remove_first: " - " %}
-          <a href="{{ _page.url | relative_url }}"
-            {% if _page.url == page.url %}class="sidebar-link cur"{% else %}class="sidebar-link"{% endif %} >
-            {{ display_title }}
-          </a>
-        {% endfor %}
+          <!-- {# 创建分组显示，按照标题排序 #} -->
+          {% assign groups_init = grouped_pages | group_by_exp: "item", "item.title | split: ' - ' | first | strip" %} 
+          {% assign groups = groups_init | sort: "name" %} 
+          {% for group in groups %}
+              <div class="sidebar-group">
+                  <div class="sidebar-group-name lightgrey">
+                      {{ group.name }}
+                      <hr />
+                  </div>
+                  {% for _page in group.items %} 
+                      {% assign display_title = _page.title | remove_first: group.name | remove_first: " - " %}
+                      <a href="{{ _page.url | relative_url }}" {% if _page.url==page.url %}class="sidebar-link cur" {% else %}class="sidebar-link" {% endif %}> {{ display_title }} </a>
+                  {% endfor %}
+              </div>
+              <hr />
+          {% endfor %}
+          <hr />
+          <br /><br /><br /><br /><br />
       </div>
-      <hr>
-    {% endfor %}
-    <hr>
-    <br><br><br><br><br>
-  </div>
 
-  <div class="content">
-    <!-- 如果含有notice或者essay，则显示公告 -->
-    {% if page.url contains "notice" or page.url contains "essay" %}
-      <h2 id="{{ page.title | slugify }}">{{ page.title }}</h2>
-      <em><strong>加入小班可以查看最新公告嗷 </strong></em><br>
-      <a href="{{ site.baseurl }}/joinus.html" target="_blank">👉 点此查看入班攻略 👈</a><p></p>
-      <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>原创 @莲雾麦片和花卷 于百词斩小班公告
-谢绝转载或AI训练
-</code>本文链接<span class="copy-btn skyblue" data-clipboard-text="{{ page.url | absolute_url }}">{{ page.url | absolute_url }}</span></pre></div></div>
-    {% endif %}
-    {% assign content_paragraphs = content | split: '<p>' %}
-    {% for paragraph in content_paragraphs %}
-      <div {% if page.url contains "notice" or page.url contains "essay" %}class="item nocopy" {% else %}class="item"{% endif %}>{{ paragraph }}</div>
-    {% endfor %}
-  </div>
-<div id="vue-app"></div>
-<br><br><br><br><br><br><br><br><br><br>
-<div class="fixed-footer">ystkc.github.io<br><br>Cereanilla麦花</div>
-<div class="footer">没有更多啦<br><br><br><br><br><br></div>
+      <div class="content">
+          <!-- 如果含有notice或者essay，则显示公告 -->
+          <div class="item">
+            <h2 id="{{ page.title | slugify }}">{{ page.title }}</h2>
+              {% if page.url contains "notice" or page.url contains "essay" %}
+                <em><strong>加入小班可以查看最新公告嗷 </strong></em><br />
+                <a href="{{ site.baseurl }}/joinus.html" target="_blank">👉 点此查看入班攻略 👈</a>
+                <div class="language-plaintext highlighter-rouge">
+                    <div class="highlight">
+                      原创 @莲雾麦片和花卷 于百词斩小班公告<br>谢绝转载或AI训练<br>本文链接
+                      <span class="copy-btn skyblue" data-clipboard-text="{{ page.url | absolute_url }}">{{ page.url | absolute_url }}</span>
+                    </div>
+                </div>
+              {% endif %} 
+          </div>
+          {% assign content_paragraphs = content | split: '<p>' %} 
+          {% for paragraph in content_paragraphs %}
+              <div {% if page.url contains "notice" or page.url contains "essay" %}class="item nocopy" {% else %}class="item" {% endif %}>
+                  {{ paragraph }}
+              </div>
+          {% endfor %}
+          <div class="footer item">ystkc.github.io<br /><br />Cereanilla麦花</div>
+      </div>
+      <div class="fixed-footer"></div>
 </body>
 <script type="text/javascript" src="https://js.users.51.la/21949163.js"></script>
 <script>
@@ -163,6 +168,30 @@
   document.addEventListener("DOMContentLoaded", function () {
     fadeController.init();
     addCopyButton();
+    
+    // 添加移动相应式布局
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    const menuToggle = document.querySelector('.menu-toggle');
+    
+    // 切换菜单显示
+    function toggleMenu() {
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+    
+    // 按钮点击事件
+    menuToggle.addEventListener('click', toggleMenu);
+    
+    // 遮罩层点击关闭
+    overlay.addEventListener('click', toggleMenu);
+    
+    // ESC键关闭菜单
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar.classList.contains('active')) {
+        toggleMenu();
+      }
+    });
   });
 </script>
 </html>
