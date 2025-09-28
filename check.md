@@ -8,6 +8,7 @@ title: 公告违禁词检查
 subtitle: Cereanilla麦花
 redirect_from:
   - /BCZ-Notice-Examiner/
+  - /
 ---
 <meta charset="UTF-8">
 <style>

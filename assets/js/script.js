@@ -81,16 +81,16 @@ async function fetchBinAndUnzip(url, index, total, is_json = true) {
 
 let url;
 
-const acceptWordsUrl = "assets/accept_words.bin.zip";
-const badWordsUrl = "assets/bad_words.bin.zip";
-const enhancedBadWordsUrl = "assets/enhanced_bad_words.bin.zip";
-const warnWordsUrl = "assets/warn_words.bin.zip";
+const acceptWordsUrl = "/assets/accept_words.bin.zip";
+const badWordsUrl = "/assets/bad_words.bin.zip";
+const enhancedBadWordsUrl = "/assets/enhanced_bad_words.bin.zip";
+const warnWordsUrl = "/assets/warn_words.bin.zip";
 
 let badWords, enhancedBadWords, acceptWords, warnWords;
 let acceptWordsSet, warnWordsSet, badWordsSet, enhancedBadWordsSet;
 let initStatus = 0;
 async function init() {
-  url = window.location.href;
+  url = window.location.origin;
   [badWords, acceptWords, enhancedBadWords, warnWords] = await Promise.all([
     fetchBinAndUnzip(url + badWordsUrl, 1, 4),
     fetchBinAndUnzip(url + acceptWordsUrl, 2, 4, false),

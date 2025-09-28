@@ -61,6 +61,7 @@
         <!-- 如果含有notice或者essay，则显示公告 -->
         <div class="item">
           <h2 id="{{ page.title | slugify }}">{{ page.title }}</h2>
+          <span class="subtitle">{{ page.subtitle }}</span>
           {% if page.url contains "notice" or page.url contains "essay" %}
             <em><strong>加入小班可以查看最新公告嗷 </strong></em><br />
             <a href="{{ site.baseurl }}/joinus.html" target="_blank">👉 点此查看入班攻略 👈</a>
@@ -73,10 +74,19 @@
           {% endif %} 
         </div>
         {% assign content_paragraphs = content | split: '<p>' %} 
+        {% assign first_paragraph = true %}
         {% for paragraph in content_paragraphs %}
-          <div {% if page.url contains "notice" or page.url contains "essay" %}class="item nocopy" {% else %}class="item" {% endif %}>
-            {{ paragraph }}
-          </div>
+          {% if first_paragraph == true %}
+            {% assign first_paragraph = false %}
+            <div class="item">
+              <span class="notice">{{ site.data.ad.content }}</span>
+            </div>
+          {% endif %}
+          {% if paragraph != "" %}
+            <div {% if page.url contains "notice" or page.url contains "essay" %}class="item nocopy" {% else %}class="item" {% endif %}>
+              {{ paragraph }}
+            </div>
+          {% endif %}
         {% endfor %}
         <div class="footer item">ystkc.github.io<br /><br />Cereanilla麦花</div>
     </div>

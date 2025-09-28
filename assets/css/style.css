@@ -135,6 +135,10 @@ h2 {
   margin-bottom: 20px;
 }
 
+.notice {
+  font-size: smaller;
+}
+
 .nocopy {
   user-select: none;
   -webkit-user-select: none;
