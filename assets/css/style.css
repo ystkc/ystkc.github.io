@@ -3,10 +3,13 @@
   padding: 0;
   box-sizing: border-box;
 }
-
+:root {
+  color-scheme: light dark;
+}
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #6e8efb, #a777e3), url("/assets/img/bg/landscape2.jpg") no-repeat center center fixed;
+  background: linear-gradient(135deg, #6e8efb, #a777e3),
+    url("/assets/img/bg/landscape2.jpg") no-repeat center center fixed;
   background-size: cover;
   background-blend-mode: overlay;
   color: #333;
@@ -17,7 +20,9 @@ body {
 
 @media (prefers-color-scheme: dark) {
   body {
-    background: linear-gradient(135deg, #cbba6b, #93d1e2), url("/assets/img/bg/landscape2.jpg") no-repeat center center fixed;
+    background: linear-gradient(135deg, #6e8efb, #a777e3),
+      url("/assets/img/bg/landscape2.jpg") no-repeat center center fixed;
+    background-size: cover;
   }
 }
 
@@ -48,7 +53,6 @@ body {
 }
 
 h2 {
-  color: #333;
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 2px solid rgba(92, 107, 192, 0.3);
@@ -191,11 +195,11 @@ hr {
 }
 
 .sidebar-link {
+  color: #333;
   display: block;
   padding: 10px 15px;
   margin: 6px 0;
   text-decoration: none;
-  color: #333;
   border-radius: 12px;
   transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.5);
@@ -241,12 +245,16 @@ hr {
 /* 移动端背景 */
 @media (max-aspect-ratio: 1/1) {
   body {
-    background: linear-gradient(135deg, #6e8efb, #a777e3), url("/assets/img/bg/portrait6.jpg") no-repeat center center fixed;
+    background: linear-gradient(135deg, #6e8efb, #a777e3),
+      url("/assets/img/bg/portrait6.jpg") no-repeat center center fixed;
+    background-size: cover;
   }
 }
 @media (prefers-color-scheme: dark) and (max-aspect-ratio: 1/1) {
   body {
-    background: linear-gradient(135deg, #cbba6b, #93d1e2), url("/assets/img/bg/portrait6.jpg")  no-repeat center center fixed;
+    background: linear-gradient(135deg, #6e8efb, #a777e3),
+      url("/assets/img/bg/portrait6.jpg") no-repeat center center fixed;
+    background-size: cover;
   }
 }
 
@@ -255,41 +263,112 @@ hr {
   body {
     color: #eee;
   }
-  
+
+  iframe {
+    background-color: #333;
+  }
+
   .sidebar {
-    background: rgba(33, 33, 33, 0.8);
+    background: rgba(33, 33, 33, 0.3);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
   }
-  
+
   .sidebar-link {
+    color: #eee;
     background: rgba(33, 33, 33, 0.6);
   }
-  
+
   .sidebar-link.cur {
     background: rgba(92, 107, 192, 0.3);
-    color: #3949ab;
+    color: #4bb1f0;
     font-weight: 600;
     border-left: 4px solid #3949ab;
   }
-  
+
   .sidebar-group-name {
     color: #bbdefb;
   }
-  
+
   .item {
     background: rgba(33, 33, 33, 0.8);
   }
-  
+
   .content {
     background: rgba(33, 33, 33, 0.3);
   }
-  
+
   .sidebar-overlay {
     background: rgba(0, 0, 0, 0.8);
+  }
+
+  .pink {
+    background-color: pink;
+    color: #333;
+  }
+
+  .aquamarine {
+    background-color: aquamarine;
+    color: #333;
+  }
+
+  .skyblue {
+    background-color: skyblue;
+    color: #333;
+  }
+
+  .orange {
+    background-color: orange;
+    color: #333;
+  }
+
+  .violet {
+    background-color: violet;
+    color: #333;
+  }
+
+  .yellow {
+    background-color: yellow;
+    color: #333;
+  }
+
+  .wheat {
+    /* 背景色-1 */
+    background-color: wheat;
+    color: #333;
+  }
+
+  .lightgrey {
+    /* 背景色-2 */
+    background-color: #555;
   }
 }
 
 /* 响应式设计 */
+@media (max-width: 900px) and (prefers-color-scheme: light) {
+  .sidebar {
+    background: rgba(245, 245, 255, 0.95);
+  }
+  .menu-toggle {
+    background: rgba(192, 192, 192, 0.8);
+    color: #333;
+  }
+  .menu-toggle:hover {
+    background: rgba(224, 224, 224, 0.95);
+  }
+}
+
+@media (max-width: 900px) and (prefers-color-scheme: dark) {
+  .sidebar {
+    background: rgba(88, 88, 88, 0.95);
+  }
+  .menu-toggle {
+    background: rgba(64, 64, 64, 0.8);
+    color: #eee;
+  }
+  .menu-toggle:hover {
+    background: rgba(92, 92, 92, 0.95);
+  }
+}
 @media (max-width: 900px) {
   .island-container {
     flex-direction: column;
@@ -308,7 +387,6 @@ hr {
     height: 100vh;
     max-width: 100%;
     position: fixed;
-    background: rgba(245, 245, 255, 0.95);
   }
 
   .sidebar.active {
@@ -327,16 +405,11 @@ hr {
     height: 25vh;
     width: 5vw;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-    background: rgba(245, 245, 255, 0.8);
     border: none;
     padding: 10px;
     border-radius: 5px;
     z-index: 997;
     cursor: pointer;
-  }
-
-  .menu-toggle:hover {
-    background: rgba(245, 245, 255, 0.95);
   }
 
   .display-sidebar-btn {

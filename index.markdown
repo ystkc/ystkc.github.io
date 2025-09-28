@@ -19,15 +19,10 @@ body {
 百词斩公告违禁词检查器<br>
 Created by 半只橙 & Cereanilla麦花<br>
 <div id="date" style="color:gray">构建中...</div>
-
-<textarea id="notice-input" placeholder="Paste your BCZ notice here..." style="width: 80%; height: 300px;" disabled>正在加载词库...请稍候...</textarea><br>
-<br>
-<button id="search-btn" class="btn" onclick="check_notice()">Check</button>
-<br>
-<input checked type="checkbox" style="width: 30px; height: 30px;" id="enhanced-check">加强词典
+<textarea id="notice-input" placeholder="Paste your BCZ notice here..." style="width: 80%; height: 300px;" disabled>正在加载词库...请稍候...</textarea><br><button id="search-btn" class="btn" onclick="check_notice()">Check</button><br><input checked type="checkbox" style="width: 30px; height: 30px;" id="enhanced-check">加强词典
 <div id="matches"></div>
 <div id="warn">本工具与百词斩官方无关，违禁词为用户收集<br><span style="color:red;" id="warn">使用本工具代表您确认自己的内容合法合规<br>如用于传播不良信息产生的包括但不限于封号的后果由您自负</span><br>
-<div>详细检查结果：<span style="" title="根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">确定的违禁词汇</span>
+<div>详细检查结果：<span class="pink" title="根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">确定的违禁词汇</span>
 <span class="orange" title="收集坚果墙等等通用违禁词库，范围更广，但很可能有误报" onclick="alert(this.title)">增强版违禁词汇</span>
 <span class="aquamarine" title="收集近两周通过的公告筛选得到，一般没问题" onclick="alert(this.title)">没问题的内容</span>
 <span class="yellow" title="收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">疑似违禁</span></div>
@@ -38,4 +33,3 @@ Created by 半只橙 & Cereanilla麦花<br>
 <!-- busuanzi寄咯@25.7.14 -->
 <!-- <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
 <span id="busuanzi_container_page_pv">本页总访问量<span id="busuanzi_value_page_pv"></span>次</span>
-</body>
