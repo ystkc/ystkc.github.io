@@ -1,7 +1,7 @@
 ---
 layout: sidebar
 title: 投稿
-subtitle: Cereanilla麦花
+subtitle: 
 ---
 
 方式1️⃣：QQ邮箱：<a href="mailto:1612162886@qq.com" class="aquamarine copy-btn" data-clipboard-text="1612162886@qq.com">1612162886@qq.com</a>

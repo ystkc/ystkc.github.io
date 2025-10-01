@@ -29,3 +29,4 @@ category.py
 *.sh
 /intel-extension-for-tensorflow
 *.disabled
+assets/img/bg/landscape2.psd
