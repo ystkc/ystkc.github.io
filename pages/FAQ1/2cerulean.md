@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 1.麦花捞 - 如何添加王者黑名单
+title: 1.答疑（班长栏目） - 如何添加王者黑名单？
 subtitle: 退班细作追杀秘籍！
 ---
 

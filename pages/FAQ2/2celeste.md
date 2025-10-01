@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 1.麦花捞 - 不小心漏卡怎么办？
+title: 1a.答疑（成员栏目） - 不小心漏卡怎么办？
 subtitle: 装进麻袋，炖成鸽汤！
 ---
 

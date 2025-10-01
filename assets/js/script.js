@@ -517,7 +517,7 @@ function check_notice() {
     if (matchedList.length === 0) {
       document.querySelector(
         "#matches"
-      ).innerHTML = `<div>未找到违禁词！你可以试试<a href="/pages/FAQ/aliceblue" target="_blank">下列解决方案</a><br><iframe src="/pages/FAQ/aliceblue_iframe" width="100%" height="300px" style="background:transparent"></iframe></div>`;
+      ).innerHTML = `<div>未找到违禁词！你可以试试<a href="/pages/FAQ/aliceblue" target="_blank">下列解决方案</a><br><iframe src="/pages/FAQ1/aliceblue_iframe" width="100%" height="300px" style="background:transparent"></iframe></div>`;
       addCopyButton(document.querySelector("#qq"));
       addCopyButton(document.querySelector("#wechat"));
     } else {

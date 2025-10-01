@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 1.麦花捞 - 违禁词网站打不开怎么办？
+title: 1.答疑（班长栏目） - 违禁词网站打不开怎么办？
 subtitle: CDN已死，勿念
 ---
 
