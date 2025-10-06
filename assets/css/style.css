@@ -246,15 +246,16 @@ hr {
   display: none;
 }
 
-/* 移动端背景 */
-@media (max-aspect-ratio: 1/1) {
+/* 方框背景 */
+@media (max-aspect-ratio: 4/3) {
   body {
-    background: linear-gradient(135deg, #6e8efb, #a777e3),
-      url("/assets/img/bg/portrait6.jpg") no-repeat center center fixed;
+    background: linear-gradient(135deg, #c7a300, #357aaf),url("/assets/img/bg/square1.jpg") no-repeat center center fixed;
     background-size: cover;
   }
 }
-@media (prefers-color-scheme: dark) and (max-aspect-ratio: 1/1) {
+
+/* 移动端背景 */
+@media (max-aspect-ratio: 3/4) {
   body {
     background: linear-gradient(135deg, #6e8efb, #a777e3),
       url("/assets/img/bg/portrait6.jpg") no-repeat center center fixed;
