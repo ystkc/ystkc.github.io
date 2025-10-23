@@ -6,8 +6,6 @@
 layout: sidebar
 title: 公告违禁词检查
 subtitle: .
-redirect_from:
-  - /BCZ-Notice-Examiner/
 ---
 <meta charset="UTF-8">
 <body>
