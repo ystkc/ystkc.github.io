@@ -1,6 +1,7 @@
 ---
 layout: sidebar
 title: 1.答疑（班长栏目） - 违禁词查不到怎么办？
+author: Cereanilla麦花
 subtitle: 就用麦花查词器（不是）
 ---
 

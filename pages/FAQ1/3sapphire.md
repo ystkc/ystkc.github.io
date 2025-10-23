@@ -2,6 +2,7 @@
 layout: sidebar
 title: 1.答疑（班长栏目） - 如何快速上王者？
 subtitle: 百词斩打工人速成手册
+author: Cereanilla麦花
 ---
 
 麦花的随笔：<br><br>

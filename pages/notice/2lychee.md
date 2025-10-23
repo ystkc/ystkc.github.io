@@ -1,7 +1,8 @@
 ---
 layout: sidebar
 title: 2.麦花的小班公告 - 立志做大事，不要做大官
-subtitle: Cereanilla麦花
+author: Cereanilla麦花
+subtitle: .
 ---
 
 “我劝诸君立志，是要做大事，不可做大官。”

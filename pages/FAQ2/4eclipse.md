@@ -1,7 +1,8 @@
 ---
 layout: sidebar
 title: 1a.答疑（成员栏目） - 同桌复原卡有用吗？
-subtitle: Cereanilla麦花
+subtitle: . 
+author: Cereanilla麦花
 ---
 
 我个人认为没用。

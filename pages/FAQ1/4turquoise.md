@@ -2,6 +2,7 @@
 layout: sidebar
 title: 1.答疑（班长栏目） - 违禁词、黑名单网站打不开怎么办？
 subtitle: CDN已死，勿念
+author: Cereanilla麦花
 ---
 
 黑名单快查如果打不开可以直接访问金山文档的版本

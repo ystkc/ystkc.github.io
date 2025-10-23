@@ -7,6 +7,9 @@
   <meta name="shenma-site-verification" content="8d1d8140953cdb9ea2427f9148bf62a6_1742711445">
   <meta name="bytedance-verification-code" content="CNSbCwn/CTVVGJqWDh2q" />
   <meta name="360-site-verification" content="1ac710edca7c0492c0bb15f5764bc000" />
+  <meta http-equiv="Cache-Control" content="no-transform " />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="renderer" content="webkit">
   <title>{{ page.title }}{{ page.subtitle }} - {{ site.title }}</title>
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   <!-- <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}"> -->
@@ -60,10 +63,11 @@
     <div class="content">
         <!-- 如果含有notice或者essay，则显示公告 -->
         <div class="item">
-          <h2 id="{{ page.title | slugify }}">{{ page.title }}</h2>
-          <span class="subtitle">{{ page.subtitle }}</span>
+          <span><h2 id="{{ page.title | slugify }}">{{ page.title }}</h2>
+          {% if page.author %} by <span class="wheat">{{ page.author }}</span>{% endif %}</span><hr>
+          {% if page.subtitle != "." %}<span class="subtitle">{{ page.subtitle }}</span>{% endif %}<br>
           {% if page.url contains "notice" or page.url contains "essay" %}
-            <em><strong>加入小班可以查看最新公告嗷 </strong></em><br />
+            <em><strong>加入小班可以查看最新公告嗷 </strong></em>
             <a href="{{ site.baseurl }}/joinus.html" target="_blank">👉 点此查看入班攻略 👈</a>
             <div class="language-plaintext highlighter-rouge">
               <div class="highlight">
@@ -175,10 +179,7 @@
       });
     }
   }
-  document.addEventListener("DOMContentLoaded", function () {
-    fadeController.init();
-    addCopyButton();
-    
+  function addMobileMenu() {
     // 添加移动相应式布局
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
@@ -202,6 +203,11 @@
         toggleMenu();
       }
     });
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    fadeController.init();
+    addCopyButton();
+    addMobileMenu();
   });
 </script>
 </html>

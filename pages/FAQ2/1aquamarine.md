@@ -2,6 +2,7 @@
 layout: sidebar
 title: 1a.答疑（成员栏目） - 为什么王者班长一直踢我？
 subtitle: 因为你是鸽鸽（不是
+author: Cereanilla麦花
 ---
 
 为什么王者班长一直踢你？除了极小的可能是因为手滑，大部分情况下是因为你的校牌数据太烂了。<br><br>

@@ -1,7 +1,8 @@
 ---
 layout: sidebar
 title: 2.麦花的小班公告 - 天接云涛连晓雾
-subtitle: 麦月记
+author: Cereanilla麦花
+subtitle: .
 ---
 
 20230707-20250407

@@ -1,7 +1,8 @@
 ---
 layout: sidebar
 title: 周中退班名单查询
-subtitle: Cereanilla麦花
+subtitle: .
+author: Cereanilla麦花
 redirect_from:
   - /w
 ---

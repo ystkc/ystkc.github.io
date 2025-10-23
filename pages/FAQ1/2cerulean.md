@@ -2,6 +2,7 @@
 layout: sidebar
 title: 1.答疑（班长栏目） - 如何添加王者黑名单？
 subtitle: 退班细作追杀秘籍！
+author: Cereanilla麦花
 ---
 
 只教一次哈，别处没有了（叉腰）

@@ -7,7 +7,7 @@
   color-scheme: light dark;
 }
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Consolas", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #6e8efb, #a777e3),
     url("/assets/img/bg/landscape2.jpg") no-repeat center center fixed;
   background-size: cover;
@@ -51,11 +51,12 @@ body {
 .sidebar-group {
   margin-bottom: 20px;
 }
-
+hr {
+  border: none;
+  border-top: 1px solid rgba(255, 0.5);
+}
 h2 {
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid rgba(92, 107, 192, 0.3);
+  display: inline-block;
 }
 
 .fixed-footer {
@@ -184,9 +185,15 @@ h2 {
   border-bottom: 2px solid rgba(92, 107, 192, 0.3);
 }
 
+@font-face {
+  font-family: UnidreamLED;
+  font-display: swap;
+  src: url(/assets/font/UnidreamLED.ttf) format("truetype")
+}
+
 hr {
   border: none;
-  border-top: 1px solid white;
+  border-top: 1px solid black;
 }
 
 .sidebar ul {
@@ -218,7 +225,7 @@ hr {
 }
 
 .sidebar-link:hover {
-  background: rgba(92, 107, 192, 0.15);
+  background: rgba(92, 107, 192, 0.35);
   transform: translateX(5px);
 }
 
@@ -258,7 +265,7 @@ hr {
 @media (max-aspect-ratio: 3/4) {
   body {
     background: linear-gradient(135deg, #6e8efb, #a777e3),
-      url("/assets/img/bg/portrait6.jpg") no-repeat center center fixed;
+      url("/assets/img/bg/portrait7.jpg") no-repeat center center fixed;
     background-size: cover;
   }
 }
@@ -346,8 +353,29 @@ hr {
     /* 背景色-2 */
     background-color: #555;
   }
+
+  .quote-text {
+    color: #fff;
+  }
+  .quote-author {
+    color: #ccc;
+  }
+  .quote-provider {
+    color: #bbb;
+  }
 }
 
+@media (prefers-color-scheme: light) {
+.quote-text {
+  color: #555;
+}
+.quote-author {
+  color: #888;
+}
+.quote-provider {
+  color: #999;
+}
+}
 /* 响应式设计 */
 @media (max-width: 900px) and (prefers-color-scheme: light) {
   .sidebar {
@@ -454,6 +482,17 @@ hr {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(20px);
   }
 }
 

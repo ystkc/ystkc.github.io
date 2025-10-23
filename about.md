@@ -1,8 +1,8 @@
 ---
 layout: sidebar
 title: About
-subtitle: 麦花喵窝
-permalink: /about/
+subtitle: .
+permalink: /about
 ---
 
     Created by 半只橙 & 麦花

@@ -2,6 +2,7 @@
 layout: none
 title: 
 subtitle: 
+author: Cereanilla麦花
 ---
 <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
 <body style="background: transparent">

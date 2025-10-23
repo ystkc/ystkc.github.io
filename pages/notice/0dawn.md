@@ -2,6 +2,7 @@
 layout: sidebar
 title: 2.麦花的小班公告 - 初识
 subtitle: 
+author: Cereanilla麦花
 ---
 
 8.24

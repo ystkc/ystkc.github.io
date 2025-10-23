@@ -1,7 +1,8 @@
 ---
 layout: sidebar
 title: 2.麦花的小班公告 - 霜沐星辰
-subtitle: Cereanilla麦花
+author: Cereanilla麦花
+subtitle: .
 ---
 
 麦花坊（原创，咕更）  2024.9.8—9.14—9.22—9.28—10.5—10.20—10.27—10.31—11.3—11.12

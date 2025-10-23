@@ -1,7 +1,8 @@
 ---
 layout: sidebar
 title: 2.麦花的小班公告 - 老师！捞不动了
-subtitle: Cereanilla麦花
+author: Cereanilla麦花
+subtitle: .
 ---
 
 2025.1

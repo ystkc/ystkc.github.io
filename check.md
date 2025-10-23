@@ -5,17 +5,11 @@
 
 layout: sidebar
 title: 公告违禁词检查
-subtitle: Cereanilla麦花
+subtitle: .
 redirect_from:
   - /BCZ-Notice-Examiner/
-  # - / # 该重定向已经手动添加，无需自动添加
 ---
 <meta charset="UTF-8">
-<style>
-body {
-  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
-}
-</style>
 <body>
 百词斩公告违禁词检查器<br>
 Created by 半只橙 & Cereanilla麦花<br>
