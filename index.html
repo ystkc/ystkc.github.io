@@ -379,29 +379,29 @@ redirect_from:
       <!-- {# 显示未分组内容 #} -->
       {% for _page in no_group_pages %}
       <a href="{{ _page.url | relative_url }}" {% if _page.url==page.url %}class="sidebar-link cur" {% else
-        %}class="sidebar-link" {% endif %}> {{ _page.title }}
-        {% endfor %}
-        <hr />
+        %}class="sidebar-link" {% endif %}> {{ _page.title }} </a>
+      {% endfor %}
+      <hr />
 
-        <!-- {# 创建分组显示，按照标题排序 #} -->
-        {% assign groups_init = grouped_pages | group_by_exp: "item", "item.title | split: ' - ' | first | strip" %}
-        {% assign groups = groups_init | sort: "name" %}
-        {% for group in groups %}
-        <div class="sidebar-group">
-          <div class="sidebar-group-name lightgrey">
-            {{ group.name }}
-            <hr />
-          </div>
-          {% for _page in group.items %}
-          {% assign display_title = _page.title | remove_first: group.name | remove_first: " - " %}
-          <a href="{{ _page.url | relative_url }}" {% if _page.url==page.url %}class="sidebar-link cur" {% else
-            %}class="sidebar-link" {% endif %}> {{ display_title }}
-            {% endfor %}
+      <!-- {# 创建分组显示，按照标题排序 #} -->
+      {% assign groups_init = grouped_pages | group_by_exp: "item", "item.title | split: ' - ' | first | strip" %}
+      {% assign groups = groups_init | sort: "name" %}
+      {% for group in groups %}
+      <div class="sidebar-group">
+        <div class="sidebar-group-name lightgrey">
+          {{ group.name }}
+          <hr />
         </div>
-        <hr />
+        {% for _page in group.items %}
+        {% assign display_title = _page.title | remove_first: group.name | remove_first: " - " %}
+        <a href="{{ _page.url | relative_url }}" {% if _page.url==page.url %}class="sidebar-link cur" {% else
+          %}class="sidebar-link" {% endif %}> {{ display_title }} </a>
         {% endfor %}
-        <hr />
-        <br /><br /><br /><br /><br />
+      </div>
+      <hr />
+      {% endfor %}
+      <hr />
+      <br /><br /><br /><br /><br />
     </div>
     <!-- 左侧面板 -->
     <div class="left-panel">
