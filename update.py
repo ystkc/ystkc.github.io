@@ -49,4 +49,4 @@ if __name__ == '__main__':
     
     with open('latest.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(file_list, ensure_ascii=False, indent=0).replace('\n', ''))
-    print('最新文件列表已更新至latest.json文件。')
+    print('最新文件列表已更新至latest.json文件。注意：仅支持.md、.markdown、.html文件，不包含在_config.yml文件中的排除文件，以及路径上含有.的文件')

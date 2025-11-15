@@ -8,8 +8,7 @@
 }
 body {
   font-family: "Consolas", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #6e8efb, #a777e3),
-    url("/assets/img/bg/landscape2.jpg") no-repeat center center fixed;
+  background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/oceanMontage.jpg") no-repeat center center fixed;
   background-size: cover;
   background-blend-mode: overlay;
   color: #333;
@@ -20,8 +19,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
   body {
-    background: linear-gradient(135deg, #6e8efb, #a777e3),
-      url("/assets/img/bg/landscape2.jpg") no-repeat center center fixed;
+    background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/oceanMontage.jpg") no-repeat center center fixed;
     background-size: cover;
   }
 }
@@ -256,7 +254,8 @@ hr {
 /* 方框背景 */
 @media (max-aspect-ratio: 4/3) {
   body {
-    background: linear-gradient(135deg, #c7a300, #357aaf),url("/assets/img/bg/square1.jpg") no-repeat center center fixed;
+    /* background: linear-gradient(135deg, #c7a300, #357aaf),url("/assets/img/bg/midAutumnFestival.jpg") no-repeat center center fixed; */
+    background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/doubleNinthFestival.jpg") no-repeat center center fixed;
     background-size: cover;
   }
 }
@@ -264,8 +263,8 @@ hr {
 /* 移动端背景 */
 @media (max-aspect-ratio: 3/4) {
   body {
-    background: linear-gradient(135deg, #6e8efb, #a777e3),
-      url("/assets/img/bg/portrait7.jpg") no-repeat center center fixed;
+    /* background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/autumnEquinox.jpg") no-repeat center center fixed; */
+    background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/hoarFrostFalls.jpg") no-repeat center center fixed;
     background-size: cover;
   }
 }
