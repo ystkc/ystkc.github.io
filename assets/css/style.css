@@ -264,7 +264,10 @@ hr {
 @media (max-aspect-ratio: 3/4) {
   body {
     /* background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/autumnEquinox.jpg") no-repeat center center fixed; */
-    background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/hoarFrostFalls.jpg") no-repeat center center fixed;
+    /* background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/hoarFrostFalls.jpg") no-repeat center center fixed; */
+    background: linear-gradient(135deg, #6e8efb00, #a777e300),url("/assets/img/bg/lanternFestival2026.jpg") no-repeat center center fixed;
+    /* 将背景进行模糊处理 */
+    backdrop-filter: blur(2px);
     background-size: cover;
   }
 }
