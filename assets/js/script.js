@@ -1,7 +1,7 @@
 function encoder(array, no_convert = false) {
   const byteArray = new Uint8Array(array);
-  var result = [];
-  var index = 0;
+  let result = [];
+  let index = 0;
   for (let i = 0; i < byteArray.length; i++, index++) {
     // 将其中的,,替换成,[],（节省传输字节）
     if (result[index - 1] == 44 && (byteArray[i] ^ 0x1f) == 44) {
@@ -139,7 +139,7 @@ function check_notice() {
 
     function parseText(text, step = 2) {
       const result = [];
-      var temp = "";
+      let temp = "";
       for (let i = 0; i < text.length; i++) {
         for (let j = i; j < i + step && j < text.length; j++) {
           temp += text[j];
@@ -194,7 +194,7 @@ function check_notice() {
       let newText = "";
       let i = 0; // 使用 index 变量来遍历文本
 
-      var char = "",
+      let char = "",
         doubleChar = false;
       while (i < text.length) {
         // 使用 codePointAt 检查字符是否是 emoji
@@ -235,14 +235,14 @@ function check_notice() {
       return [newText, invalidStorage];
     }
 
-    function restoreInvalidChar(text, invalidStorage) {
+    function restoreInvalidChar(text, invalidStorage, initialStorage) {
       let bad = false;
       let accept = false;
       let warn = false;
       let enhance = false;
-      var doubleChar = false;
+      let doubleChar = false;
       let newText = "";
-      var temp_text = "";
+      let temp_text = "";
       const replaceList = [
         "一",
         "二",
@@ -268,7 +268,7 @@ function check_notice() {
       ];
       text += " ";
       for (
-        var textPosition = 0, position = 0;
+        let textPosition = 0, position = 0;
         textPosition < text.length;
         position++, textPosition++
       ) {
@@ -282,9 +282,9 @@ function check_notice() {
 
         if (position in invalidStorage) {
           // 先统计出现2的次数
-          var cnt = 0,
+          let cnt = 0,
             index = 0;
-          for (var i = 0; i < invalidStorage[position].length; i++) {
+          for (let i = 0; i < invalidStorage[position].length; i++) {
             if (invalidStorage[position][i] == "c") {
               cnt++;
               index = i;
@@ -301,8 +301,8 @@ function check_notice() {
           }
 
           for (const char of invalidStorage[position]) {
-            if (char >= "a" && char <= "z") {
-              if (char < minChar) {
+            if (char >= "a" && char <= "z") { // 是控制字符
+              if (char < minChar) { // 越靠近a，覆盖优先级越高
                 minChar = char;
                 minCharCnt = 1;
               } else if (char == minChar) {
@@ -310,10 +310,10 @@ function check_notice() {
               }
             } else if (
               replaceList.includes(char) ||
-              (char >= "A" && char <= "Z")
+              (char >= "A" && char <= "Z") // 是被替换的字符
             ) {
               temp_text = char;
-            } else {
+            } else { // 是无效字符，取消所有控制色
               newText += "</span>" + char;
               bad = false;
               accept = false;
@@ -384,24 +384,17 @@ function check_notice() {
       return newText;
     }
 
-    var [validInputStr, invalidStorage] = sliceInvalidChar(inputStr);
-
-    const textSet = new Set(parseText(validInputStr));
-    const textSetLong = new Set(parseText(validInputStr, 4));
-
-    var matchedList = [];
-
-    function checkBadWords(validInputStr, patternSet, matchedList, type) {
+    function checkBadWords(validInputStr, invalidStorage, patternSet, matchedList, type) {
       for (const pattern of patternSet) {
         let tempValidInputStr = validInputStr;
         let pos = 0;
         if (pattern[0] == "/") {
           // 正则表达式
-          var exp = new RegExp(pattern.slice(1, -1), "g");
-          var match = tempValidInputStr.match(exp);
-          var length = 0;
+          let exp = new RegExp(pattern.slice(1, -1), "g");
+          let match = tempValidInputStr.match(exp);
+          let length = 0;
           if (!match) continue;
-          for (var i = 0; i < match.length; i++) {
+          for (let i = 0; i < match.length; i++) {
             pos += tempValidInputStr.indexOf(match[i]);
             length = match[i].length;
             tempValidInputStr = validInputStr.slice(pos + length);
@@ -410,12 +403,12 @@ function check_notice() {
             pos += length;
           }
         } else if (pattern.includes("|")) {
-          var multiple_valid = true;
-          var words = pattern.split("|");
-          var pos_list = [],
+          let multiple_valid = true;
+          let words = pattern.split("|");
+          let pos_list = [],
             deleted_length = 0;
-          for (var i = 0; i < words.length; i++) {
-            var index = tempValidInputStr.indexOf(words[i]);
+          for (let i = 0; i < words.length; i++) {
+            let index = tempValidInputStr.indexOf(words[i]);
             if (index == -1) {
               multiple_valid = false;
               break;
@@ -427,7 +420,7 @@ function check_notice() {
           }
           if (multiple_valid) {
             matchedList.push(pattern);
-            for (var i in pos_list) {
+            for (let i in pos_list) {
               setInvalidStorage(
                 invalidStorage,
                 pos_list[i],
@@ -448,17 +441,29 @@ function check_notice() {
       }
       return matchedList;
     }
-    // 匹配bad_words
+    // 清洗
+    let [validInputStr, invalidStorage] = sliceInvalidChar(inputStr);
+    let initialStorage = {}; // invalidStorage对应的是清洗后的位置，initialStorage对应的是原始位置
+
+    const textSet = new Set(parseText(validInputStr));
+    // 清洗后(去除标点、中文数字、特殊符号如™等)一些违禁词识别不到，因此原来的也要合并进去
+    const textSetLong = new Set([...parseText(validInputStr, 4), ...parseText(inputStr, 4)]);
+    
+    // 匹配bad_words（初步筛选）
     const textBadSet = new Set(
       [...badWordsSet].filter(
         (word) =>
-          textSetLong.has(word) ||
-          word[0] == "/" ||
-          word.length > 4 ||
-          word.includes("|")
+          textSetLong.has(word) || // 命中
+          word[0] == "/" || // 正则表达式
+          word.length > 4 || // 快速筛选都是短片，超过4的需要手动检测
+          word.includes("|") // 多词匹配
       )
     );
-    matchedList = checkBadWords(validInputStr, textBadSet, matchedList, "b");
+
+    let matchedList = [];
+
+    matchedList = checkBadWords(validInputStr, invalidStorage, textBadSet, matchedList, "b");
+    matchedList = checkBadWords(inputStr, initialStorage, textBadSet, matchedList, "b");
 
     if (document.querySelector("#enhanced-check").checked) {
       // 匹配enhanced_bad_words
@@ -471,12 +476,8 @@ function check_notice() {
             word.includes("|")
         )
       );
-      matchedList = checkBadWords(
-        validInputStr,
-        textEnhancedBadSet,
-        matchedList,
-        "a"
-      );
+      matchedList = checkBadWords(validInputStr, invalidStorage, textEnhancedBadSet, matchedList, "a");
+      matchedList = checkBadWords(inputStr, initialStorage, textEnhancedBadSet, matchedList, "a");
     }
 
     // 匹配accept_words
@@ -509,7 +510,7 @@ function check_notice() {
       }
     }
     // 转义\n为<br>
-    var result = restoreInvalidChar(validInputStr, invalidStorage).replace(
+    let result = restoreInvalidChar(validInputStr, invalidStorage, initialStorage).replace(
       /\n/g,
       "<br>"
     );

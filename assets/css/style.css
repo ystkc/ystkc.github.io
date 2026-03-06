@@ -251,6 +251,71 @@ hr {
   display: none;
 }
 
+/* LED计时器相关 */
+.led-active {
+  color: #eee;
+  z-index: 2;
+  width: 20px;
+  text-shadow: 3px 3px 2px rgba(0, 0, 0, 0.6)
+}
+
+.led-backdrop {
+  color: #666;
+  z-index: 1;
+  width: 20px;
+}
+
+.led-digit {
+  position: relative;
+  display: flex;
+  width: 20px;
+  justify-content: center;
+  text-align: end;
+}
+
+#date-line,
+#time-line {
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  margin: 5px;
+}
+
+#date-line {
+  font-size: 24px;
+}
+
+.time-display {
+  background-color: #5c6bc033;
+  letter-spacing: 3px;
+  min-height: 80px;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  border-radius: 10px;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    filter: blur(10px);
+    z-index: -1;
+}
+}
+
+.led-backdrop {
+  position: absolute;
+}
+
 /* 方框背景 */
 @media (max-aspect-ratio: 4/3) {
   body {
@@ -269,6 +334,19 @@ hr {
     /* 将背景进行模糊处理 */
     backdrop-filter: blur(2px);
     background-size: cover;
+  }
+  /* 让LED时钟更美观 */
+  .led-backdrop {
+    color: transparent;
+  }
+  .led-active {
+    color: paleturquoise;
+    /* color: #fac46b; */
+  }
+  .time-display {
+    &::before {
+      background-image: url("/assets/img/bg/lanternFestival2026.jpg");
+    }
   }
 }
 

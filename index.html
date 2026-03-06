@@ -217,56 +217,6 @@ redirect_from:
     }
   }
 </style>
-<!-- LED计时器相关 -->
-<style>
-  .led-active {
-    color: #eee;
-    z-index: 2;
-    width: 20px;
-  }
-
-  .led-backdrop {
-    color: #666;
-    z-index: 1;
-    width: 20px;
-  }
-
-  .led-digit {
-    position: relative;
-    display: flex;
-    width: 20px;
-    justify-content: center;
-    text-align: end;
-  }
-
-  #date-line,
-  #time-line {
-    display: flex;
-    justify-content: center;
-    border-radius: 10px;
-    margin: 5px;
-  }
-
-  #date-line {
-    font-size: 24px;
-  }
-
-  .time-display {
-    background-color: #5c6bc033;
-    letter-spacing: 3px;
-    min-height: 80px;
-    display: flex;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    font-weight: bold;
-  }
-
-  .led-backdrop {
-    position: absolute;
-  }
-</style>
 <!-- 原本用于移动端响应式隐藏，此处为了主页排版，保持隐藏状态 -->
 <style>
   .island-container {
@@ -454,7 +404,7 @@ redirect_from:
           <p></p>
         </div>
         <!-- 时间显示 -->
-        <div class="item sidebar-link tool-card time-display">
+        <div class="tool-card time-display">
           <div id="time"></div>
         </div>
       </div>
@@ -711,11 +661,17 @@ redirect_from:
       const backdrop = document.createElement("div");
       backdrop.classList.add("led-backdrop");
       backdrop.textContent = defaultValue;
+      if (defaultValue === ':') { // 冒号需要居中
+        backdrop.style.textAlign = "center";
+      }
       digit.appendChild(backdrop);
 
       const active = document.createElement("div");
       active.classList.add("led-active");
       active.textContent = initValue;
+      if (defaultValue === ':') { // 冒号需要居中
+        active.style.textAlign = "center";
+      }
       digit.appendChild(active);
 
       parent.appendChild(digit);

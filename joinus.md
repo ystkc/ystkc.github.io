@@ -5,9 +5,9 @@ subtitle: .
 author: Cereanilla麦花
 ---
 
-<div>麦花，也就是莲雾麦片和花卷<br>你可以通过个人QQ: <span class="copy-btn aquamarine">1612162886</span>或微信：<span class="copy-btn aquamarine">lianwumaipian</span> 找到我（点击色块复制）</div>
+<div>你可以通过个人QQ: <span class="copy-btn aquamarine">1612162886</span> 找到麦花，也就是莲雾麦片和花卷（点击色块复制）</div>
 <br>招人上段方法、公告过审方法、申请授权合作等等……
-<br>班长个人qq二维码<br><img src="/assets/img/00189-712330916.jpg" style="width: 260px;height: 260px;">
+<!-- <br>班长个人qq二维码<br><img src="/assets/img/00189-712330916.jpg" style="width: 260px;height: 260px;"> -->
 
 麦花的班有何特色？<br>
 1. 必须满卡，雷打不动每周锤偷懒漏卡咕咕；不接受请假，实在没空可找班长临时代卡

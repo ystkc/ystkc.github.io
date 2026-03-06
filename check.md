@@ -19,7 +19,9 @@ Created by 半只橙 & Cereanilla麦花<br>
 <span class="orange" title="收集坚果墙等等通用违禁词库，范围更广，但很可能有误报" onclick="alert(this.title)">增强版违禁词汇</span>
 <span class="aquamarine" title="收集近两周通过的公告筛选得到，一般没问题" onclick="alert(this.title)">没问题的内容</span>
 <span class="yellow" title="收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">疑似违禁</span></div>
+<hr>
 <div id="results"></div>
+<hr>
 <!-- jszip3.7.1 -->
 <script src="{{ site.baseurl }}/assets/js/jszip.min.js"></script>
 <script src="{{ site.baseurl }}/assets/js/script.js"></script>

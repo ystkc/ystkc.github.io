@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 2.麦花的小班公告 - 休赖人间梧桐轻
+title: 2.小班公告 - 休赖人间梧桐轻
 author: Cereanilla麦花
 subtitle: .
 ---

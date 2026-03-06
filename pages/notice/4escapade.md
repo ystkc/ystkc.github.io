@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 2.麦花的小班公告 - 恶作剧
+title: 2.小班公告 - 恶作剧
 author: Cereanilla麦花
 subtitle: .
 ---
