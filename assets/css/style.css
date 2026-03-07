@@ -314,6 +314,8 @@ hr {
 
 .led-backdrop {
   position: absolute;
+  left: 3px;
+  top: 3px;
 }
 
 /* 方框背景 */
@@ -336,9 +338,9 @@ hr {
     background-size: cover;
   }
   /* 让LED时钟更美观 */
-  .led-backdrop {
+  /* .led-backdrop {
     color: transparent;
-  }
+  } */
   .led-active {
     color: paleturquoise;
     /* color: #fac46b; */
