@@ -123,14 +123,28 @@ window.onload = async function () {
     document.querySelector("#results").innerHTML +=
       "词库加载失败！请刷新网页 或 更换浏览器。<br>";
   } else {
-    document.querySelector("#notice-input").disabled = false;
     document.querySelector("#notice-input").value = "";
     document.querySelector("#results").innerHTML += "初始化完成！<br>";
     document.querySelector("#date").innerHTML =
       acceptWords[0] + ",共收录" + badWords.length + "个违禁词";
-    document.querySelector("#notice-input").focus();
+    const hasTrexCookie = document.cookie.includes("trex_access");
+    if (hasTrexCookie) {
+      document.querySelector("#reminder").textContent = "你需要让小恐龙获得201分才能查违禁词哦！";
+    } else {
+      document.querySelector("#notice-input").disabled = false;
+      document.querySelector("#notice-input").focus();
+    }
   }
 };
+
+function goodMaomao() {
+  document.querySelector("#reminder").textContent = "可以查公告咯！【点此关闭游戏】"
+  document.querySelector("#notice-input").disabled = false;
+  document.querySelector("#notice-input").focus();
+}
+function tRexFunTrigger() {
+  goodMaomao();
+}
 
 function check_notice() {
   document.querySelector("#results").innerHTML = "请稍候...";

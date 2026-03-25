@@ -23,6 +23,24 @@ body {
     background-size: cover;
   }
 }
+.t-rex-wrapper { /* 在相同加载框上面叠加一个小恐龙 */
+  position: relative;
+}
+.interstitial-wrapper,.runner-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.runner-canvas { /* 默认查询框占总宽度80%，因此小恐龙插件也是80% */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 80%;
+}
+
 
 .island-container {
   display: flex;
@@ -261,6 +279,7 @@ hr {
 
 .led-backdrop {
   color: #666;
+  opacity: 0.7;
   z-index: 1;
   width: 20px;
 }
@@ -296,20 +315,6 @@ hr {
   font-size: 32px;
   font-weight: bold;
   border-radius: 10px;
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-    background-size: cover;
-    filter: blur(10px);
-    z-index: -1;
-}
 }
 
 .led-backdrop {
@@ -330,25 +335,32 @@ hr {
 /* 移动端背景 */
 @media (max-aspect-ratio: 3/4) {
   body {
-    /* background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/autumnEquinox.jpg") no-repeat center center fixed; */
-    /* background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/hoarFrostFalls.jpg") no-repeat center center fixed; */
-    background: linear-gradient(135deg, #6e8efb00, #a777e300),url("/assets/img/bg/lanternFestival2026.jpg") no-repeat center center fixed;
-    /* 将背景进行模糊处理 */
-    backdrop-filter: blur(2px);
-    background-size: cover;
+    /* background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/autumnEquinox.jpg") center center / cover no-repeat fixed; */
+    /* background: linear-gradient(135deg, #6e8efb, #a777e3),url("/assets/img/bg/hoarFrostFalls.jpg") center center / cover no-repeat fixed; */
+    background: linear-gradient(135deg, #6e8efb00, #a777e300),url("/assets/img/bg/lanternFestival2026.jpg") center center / cover no-repeat fixed;
+    
   }
   /* 让LED时钟更美观 */
-  /* .led-backdrop {
-    color: transparent;
-  } */
   .led-active {
     color: paleturquoise;
-    /* color: #fac46b; */
   }
-  .time-display {
-    &::before {
-      background-image: url("/assets/img/bg/lanternFestival2026.jpg");
-    }
+  .time-display,.item{
+    position: relative;
+  }
+  .time-display::before {
+      content: "";
+      background: linear-gradient(135deg, #6e8efb00, #a777e300),url("/assets/img/bg/lanternFestival2026.jpg") center center / cover no-repeat fixed;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-position: center;
+      background-size: cover;
+      filter: blur(10px);
+      z-index: -1;
   }
 }
 

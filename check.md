@@ -6,13 +6,32 @@
 layout: sidebar
 title: 公告违禁词检查
 subtitle: .
+trexflag: 1
 ---
 <meta charset="UTF-8">
 <body>
 百词斩公告违禁词检查器<br>
 Created by 半只橙 & Cereanilla麦花<br>
 <div id="date" style="color:gray">构建中...</div>
-<textarea id="notice-input" placeholder="Paste your BCZ notice here..." style="width: 80%; height: 300px;" disabled>正在加载词库...请稍候...</textarea><br><button id="search-btn" class="btn" onclick="check_notice()">Check</button><br><input checked type="checkbox" style="width: 30px; height: 30px;" id="enhanced-check">加强词典
+<div id="reminder" onclick="document.getElementById('t-rex').remove(),document.getElementById('reminder').remove()"></div>
+<div class="t-rex-wrapper">
+<div class="interstitial-wrapper" id="t-rex"></div>
+<textarea id="notice-input" placeholder="Paste your BCZ notice here..." style="width: 80%; height: 300px;" disabled>正在加载词库...请稍候...</textarea>
+</div>
+
+<script>
+// 检查是否有小恐龙游戏访问权限
+function hasTrexAccess() {
+  return document.cookie.includes('trex_access=true');
+}
+
+// 如果没有访问权限，隐藏游戏相关元素
+if (!hasTrexAccess()) {
+  document.getElementById('t-rex').style.display = 'none';
+  document.getElementById('reminder').style.display = 'none';
+}
+</script>
+<br><button id="search-btn" class="btn" onclick="check_notice()">Check</button><br><input checked type="checkbox" style="width: 30px; height: 30px;" id="enhanced-check">加强词典
 <div id="matches"></div>
 <div id="warn">本工具与百词斩官方无关，违禁词为用户收集<br><span style="color:red;" id="warn">使用本工具代表您确认自己的内容合法合规<br>如用于传播不良信息产生的包括但不限于封号的后果由您自负</span><br>
 <div>详细检查结果：<span class="pink" title="根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">确定的违禁词汇</span>

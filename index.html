@@ -403,6 +403,12 @@ redirect_from:
           <h3>随机降落</h3>
           <p></p>
         </div>
+        <div class="item sidebar-link tool-card" onclick="openRedeemModal()">
+          <div class="info-icon">i</div>
+          🎁
+          <h3>神秘兑换处</h3>
+          <p></p>
+        </div>
         <!-- 时间显示 -->
         <div class="tool-card time-display">
           <div id="time"></div>
@@ -718,6 +724,215 @@ redirect_from:
       addMobileMenu();
       addLatestPages();
       createLEDTimer();
+    }
+  </script>
+
+  <!-- 兑换窗口 -->
+  <div id="redeem-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeRedeemModal()">&times;</span>
+      <h2>神秘兑换</h2>
+      <div id="redeem-input-group">
+        <p id="redeem-prompt">麦花不会告诉你兑换码的</p>
+        <input type="text" id="redeem-code" placeholder="请输入兑换码">
+        <button onclick="redeemCode()">兑换</button>
+      </div>
+      <p id="redeem-message">今天想要什么呢？</p>
+      <div id="redeem-content"></div>
+    </div>
+  </div>
+
+  <style>
+    /* 模态框样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .modal-content h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-content p {
+      margin-bottom: 15px;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    .modal-content button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .modal-content button:hover {
+      background-color: #45a049;
+    }
+
+    #redeem-message {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .modal-content {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #555;
+      }
+
+      .modal-content input {
+        background-color: #444;
+        color: #fff;
+        border: 1px solid #666;
+      }
+    }
+  </style>
+
+  <style>
+    .bad-maomao {
+      display: inline-flex;
+      gap: 30px;
+    }
+    .bad-maomao button {
+      font-family: Arial, sans-serif;
+    }
+  </style>
+  <script>
+    // 兑换码列表
+    const validRedeemCodes = ["我想要小恐龙！","我要小恐龙！","我想玩小恐龙！","小恐龙！","想要小恐龙！","想玩小恐龙！","给我小恐龙！","我想要！","我要！"];
+    let state = 0;
+
+    // 打开兑换窗口
+    function openRedeemModal() {
+      document.getElementById('redeem-modal').style.display = 'block';
+      document.getElementById('redeem-input-group').style.display = 'block';
+      document.getElementById('redeem-content').innerHTML = '';
+      if (state == 2) { // 不许反悔模式
+        document.getElementById('redeem-prompt').textContent = '';
+        redeemCode(null, null);
+      } else if (state == -1) { // 已拒绝，重新打开
+        document.getElementById('redeem-prompt').textContent = '小恐龙不要你了';
+        document.getElementById('redeem-message').textContent = '';
+        state = 0;
+      }
+    }
+
+    // 关闭兑换窗口
+    function closeRedeemModal() {
+      document.getElementById('redeem-modal').style.display = 'none';
+      document.getElementById('redeem-code').value = '';
+      document.getElementById('redeem-message').textContent = '';
+    }
+
+    // 兑换码验证
+    function redeemCode(code, target) {
+      if (!code) code = document.getElementById('redeem-code').value.trim().toUpperCase();
+      console.log(code);
+      const message = document.getElementById('redeem-message');
+      const content = document.getElementById('redeem-content');
+      const inputGroup = document.getElementById('redeem-input-group');
+
+      if (state == 0) {
+        if (code && validRedeemCodes.includes(code)) {
+          message.textContent = '确定要小恐龙吗？';
+          content.innerHTML = '<img style="width:100%" id="rua" src="assets/img/t-rex-runner/cookie.jpg" alt="这是小恐龙饼干"><div class="bad-maomao"><button style="background-color: red" onclick="redeemCode(1, this)">Accept all</button><button onclick="redeemCode(2, this)">Only neccessary</button><button onclick="redeemCode(3, this)">Decline</button><div>';
+          inputGroup.style.display = 'none';
+          state = 1;
+        } else {
+          // 英文感叹号或者英文字母：
+          if (code.slice(-1) === '!' || /^[a-zA-Z]+$/.test(code)) {
+            message.textContent = '是中文';
+            message.style.color = 'black';
+          } else if (code.slice(-1) !== "！") {
+            message.textContent = '语气不够强烈';
+            message.style.color = 'black';
+          } else {
+            message.textContent = '兑换码无效，请重新输入。';
+            message.style.color = 'black';
+          }
+        }
+      } else if (state == 1) {
+        if (code == 1) {
+          // 设置cookie
+          document.cookie = "trex_access=true; path=/; max-age=31536000"; // 1年有效期
+          // document.cookie = "trex_access=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+          message.textContent = '兑换成功！不许反悔哦。快去公告检查页面玩吧~';
+          message.style.color = 'red'; // 颜色代表这个操作是否安全（点头）
+          target.parentNode.remove();
+          state = 2;
+          setTimeout(closeRedeemModal, 2000);
+        } else if (code == 2) {
+          message.textContent = '就这一个，你到底要不要？';
+          document.getElementById('rua').src='assets/img/t-rex-runner/onecookie.jpg';
+          message.style.color = 'green';
+          target.remove();
+        } else if (code == 3) {
+          message.textContent = '你拒绝了小恐龙！';
+          message.style.color = 'green';
+          target.parentNode.remove();
+          state = -1;
+          setTimeout(closeRedeemModal, 2000);
+        }
+      } else if (state == 2) {
+        message.textContent = '你已经兑换过了，不许反悔哦';
+        message.style.color = 'red';
+        setTimeout(closeRedeemModal, 2000);
+      }
+    }
+
+    // 点击模态框外部关闭
+    window.onclick = function(event) {
+      const modal = document.getElementById('redeem-modal');
+      if (event.target == modal) {
+        closeRedeemModal();
+      }
     }
   </script>
 
