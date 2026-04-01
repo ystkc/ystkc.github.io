@@ -31,3 +31,4 @@ category.py
 *.disabled
 assets/img/bg/landscape2.psd
 /sentences-bundle-master
+*.json

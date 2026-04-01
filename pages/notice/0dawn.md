@@ -3,6 +3,7 @@ layout: sidebar
 title: 2.小班公告 - 初识
 subtitle: 
 author: Cereanilla麦花
+shareKey: 1alv4ldkkhcxyln6
 ---
 
 8.24

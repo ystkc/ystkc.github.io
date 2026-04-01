@@ -732,12 +732,12 @@ redirect_from:
     <div class="modal-content">
       <span class="close" onclick="closeRedeemModal()">&times;</span>
       <h2>神秘兑换</h2>
+      <h3 id="redeem-message">今天想要什么呢？</h3>
       <div id="redeem-input-group">
-        <p id="redeem-prompt">麦花不会告诉你兑换码的</p>
+        <p id="redeem-prompt" style="color:grey">麦花不会告诉你兑换码的</p>
         <input type="text" id="redeem-code" placeholder="请输入兑换码">
         <button onclick="redeemCode()">兑换</button>
       </div>
-      <p id="redeem-message">今天想要什么呢？</p>
       <div id="redeem-content"></div>
     </div>
   </div>
@@ -815,7 +815,6 @@ redirect_from:
     }
 
     #redeem-message {
-      margin-top: 15px;
       text-align: center;
       font-weight: bold;
     }
@@ -861,6 +860,8 @@ redirect_from:
         document.getElementById('redeem-prompt').textContent = '小恐龙不要你了';
         document.getElementById('redeem-message').textContent = '';
         state = 0;
+      } else {
+        document.getElementById('redeem-message').textContent = '今天想要什么呢？';
       }
     }
 
@@ -894,7 +895,7 @@ redirect_from:
             message.textContent = '语气不够强烈';
             message.style.color = 'black';
           } else {
-            message.textContent = '兑换码无效，请重新输入。';
+            message.textContent = '你想要的这个没有，换一个';
             message.style.color = 'black';
           }
         }

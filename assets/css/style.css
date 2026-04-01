@@ -1,6 +1,5 @@
 * {
   margin: 0;
-  box-sizing: border-box;
 }
 :root {
   color-scheme: light dark;
@@ -153,6 +152,10 @@ h2 {
 
 .notice {
   font-size: smaller;
+}
+
+.copy-btn {
+  display: inline;
 }
 
 .nocopy {

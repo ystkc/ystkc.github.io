@@ -41,7 +41,7 @@
       {% endfor %}
       <hr />
 
-      <!-- {# 创建分组显示，按照标题排序 #} -->
+      <!-- {# 创建分组显示，按照标题降序 #} -->
       {% assign groups_init = grouped_pages | group_by_exp: "item", "item.title | split: ' - ' | first | strip" %} 
       {% assign groups = groups_init | sort: "name" %} 
       {% for group in groups %}
@@ -50,7 +50,8 @@
             {{ group.name }}
             <hr />
           </div>
-          {% for _page in group.items %} 
+          {% assign subitems = group.items | sort: "url" | reverse %}
+          {% for _page in subitems %} 
             {% assign display_title = _page.title | remove_first: group.name | remove_first: " - " %}
             <a href="{{ _page.url | relative_url }}" {% if _page.url==page.url %}class="sidebar-link cur" {% else %}class="sidebar-link" {% endif %}> {{ display_title }} </a>
           {% endfor %}
@@ -61,22 +62,133 @@
       <br /><br /><br /><br /><br />
     </div>
     <div class="content">
-        <!-- 如果含有notice或者essay，则显示公告 -->
-        <div class="item">
-          <span><h2 id="{{ page.title | slugify }}">{{ page.title }}</h2>
-          {% if page.author %} by <span class="wheat">{{ page.author }}</span>{% endif %}</span><hr>
-          {% if page.subtitle != "." %}<span class="subtitle">{{ page.subtitle }}</span>{% endif %}<br>
-          {% if page.url contains "notice" or page.url contains "essay" %}
-            <em><strong>加入小班可以查看最新公告嗷 </strong></em>
-            <a href="{{ site.baseurl }}/joinus.html" target="_blank">👉 点此查看入班攻略 👈</a>
-            <div class="language-plaintext highlighter-rouge">
-              <div class="highlight">
-                原创 @莲雾麦片和花卷 于百词斩小班公告<br>谢绝转载或AI训练<br>本文链接
-                <span class="copy-btn skyblue" data-clipboard-text="{{ page.url | absolute_url }}">{{ page.url | absolute_url }}</span>
-              </div>
-            </div>
-          {% endif %} 
-        </div>
+      <div class="item">
+        <span><h2 id="{{ page.title | slugify }}">{{ page.title }}</h2>
+        {% if page.author %} by <span class="wheat">{{ page.author }}</span>{% endif %}</span><hr>
+        {% if page.subtitle != "." %}<span class="subtitle">{{ page.subtitle }}</span>{% endif %}<br>
+{% if page.shareKey %}
+<!-- 如果有转载标志，则显示来源信息。首先从site.data.class.groups中获取 -->
+{% assign group = site.data.class.groups[page.shareKey] %}
+本文来自小班：{{ group.name }}
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <em><strong>禁止包括但不限于未经授权的转载和AI训练</strong></em><br>
+  </div>
+</div>
+<link rel="stylesheet" href="{{ '/assets/css/class.css' | relative_url }}" />
+<div class="group">
+  <div class="window">
+    <div class="window-frame">
+      <div class="window-panel window-panel-left"></div>
+      <div class="window-panel window-panel-right"></div>
+    </div>
+  </div>
+  <div class="info-table">
+    <div class="avatar">
+      <canvas id="ia" width="96" height="96"></canvas>
+      <canvas id="iaf" width="96" height="96"></canvas>
+    </div>
+    <div class="door">
+      <div class="door-glass"></div>
+      <div class="door-knob"></div>
+      <img class="rank-flag" src="/assets/img/flags/s{{ group.rank }}.png" />
+    </div>
+    <div class="group-info">
+      <span class="group-name">{{ group.name }}</span>
+      <span class="leader-info text">{{ group.leader }}(<p class="copy-btn skyblue">{{ group.leader_id }}</p>)的小班</span>
+    </div>
+  </div>
+  <div class="info-table-2">
+    <div class="group-info">
+      <span class="text">完成率{{ group.finishing_rate }}%</span>
+      <span class="text">{{ group.intro }}</span>
+    </div>
+  </div>
+</div>
+班级邀请码：<p class="copy-btn skyblue" id="ic"></p><br>
+<!-- 本文链接<span class="copy-btn skyblue" data-clipboard-text="{{ page.url | absolute_url }}">{{ page.url | absolute_url }}</span> -->
+<div id="cc" data-cc="{{ group.inviteCode }}" data-dd="{{ group.avatar_frame }}" data-ee="{{ group.avatar }}" data-ec="{{ group.RC4Key }}"></div>
+<script>
+  // 纯JavaScript实现的RC4算法
+  function rc4(key, data) {
+    // 将输入转换为Uint8Array
+    const keyBytes = new TextEncoder().encode(key);
+    const dataBytes = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+    
+    // KSA: Key Scheduling Algorithm
+    const S = new Array(256);
+    for (let i = 0; i < 256; i++) {
+      S[i] = i;
+    }
+    let j = 0;
+    const keyLen = keyBytes.length;
+    for (let i = 0; i < 256; i++) {
+      j = (j + S[i] + keyBytes[i % keyLen]) & 0xFF;
+      [S[i], S[j]] = [S[j], S[i]];
+    }
+    
+    // PRGA: Pseudo-Random Generation Algorithm
+    let i = 0;
+    j = 0;
+    const result = new Uint8Array(dataBytes.length);
+    for (let idx = 0; idx < dataBytes.length; idx++) {
+      i = (i + 1) & 0xFF;
+      j = (j + S[i]) & 0xFF;
+      [S[i], S[j]] = [S[j], S[i]];
+      const k = S[(S[i] + S[j]) & 0xFF];
+      result[idx] = dataBytes[idx] ^ k;
+    }
+    
+    return new TextDecoder().decode(result);
+  }
+  
+  // 显示邀请码(原链接通过RC4加密后编码为Base64)
+  const cc = document.getElementById("cc");
+  const key = atob(cc.dataset.ec);
+  document.getElementById("ic").innerHTML = rc4(key, cc.dataset.cc);
+  
+  // 异步下载图片并渲染到canvas
+  function loadImageToCanvas(url, canvasId) {
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      // 清除画布
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // 绘制图片
+      if (canvasId === 'ia') {
+        // 头像：80%大小，居中绘制
+        const size = canvas.width * 0.8;
+        const x = (canvas.width - size) / 2;
+        const y = (canvas.height - size) / 2;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, size / 2, 0, 2 * Math.PI);
+        ctx.clip();
+        ctx.drawImage(img, x, y, size, size);
+        ctx.restore();
+        // 添加边框
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, size / 2, 0, 2 * Math.PI);
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      } else if (canvasId === 'iaf') {
+        // 头像框：100%大小
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      }
+    };
+    img.src = url;
+  }
+  
+  // 加载头像和头像框
+  loadImageToCanvas(rc4(key, cc.dataset.ee), 'ia');
+  loadImageToCanvas(rc4(key, cc.dataset.dd), 'iaf');
+</script>
+{% endif %}
+</div>
+
         {% assign content_paragraphs = content | split: '<p>' %} 
         {% assign first_paragraph = true %}
         {% for paragraph in content_paragraphs %}
