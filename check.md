@@ -13,7 +13,7 @@ trexflag: 1
 百词斩公告违禁词检查器<br>
 Created by 半只橙 & Cereanilla麦花<br>
 <div id="date" style="color:gray">构建中...</div>
-<div id="reminder" onclick="document.getElementById('t-rex').remove(),document.getElementById('reminder').remove()"></div>
+<div id="reminder"></div>
 <div class="t-rex-wrapper">
 <div class="interstitial-wrapper" id="t-rex"></div>
 <textarea id="notice-input" placeholder="Paste your BCZ notice here..." style="width: 80%; height: 300px;" disabled>正在加载词库...请稍候...</textarea>

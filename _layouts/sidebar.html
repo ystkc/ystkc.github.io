@@ -107,10 +107,10 @@
 </div>
 班级邀请码：<p class="copy-btn skyblue" id="ic"></p><br>
 <!-- 本文链接<span class="copy-btn skyblue" data-clipboard-text="{{ page.url | absolute_url }}">{{ page.url | absolute_url }}</span> -->
-<div id="cc" data-cc="{{ group.inviteCode }}" data-dd="{{ group.avatar_frame }}" data-ee="{{ group.avatar }}" data-ec="{{ group.RC4Key }}"></div>
+<div id="cc" data-cc="{{ group.inviteCode }}" data-dd="{{ group.avatar_frame }}" data-ee="{{ group.avatar }}" data-ec="{{ group.key }}"></div>
 <script>
-  // 纯JavaScript实现的RC4算法
-  function rc4(key, data) {
+  // 这段脚本应当加密
+  function decrypt(key, data) {
     // 将输入转换为Uint8Array
     const keyBytes = new TextEncoder().encode(key);
     const dataBytes = Uint8Array.from(atob(data), c => c.charCodeAt(0));
@@ -145,7 +145,7 @@
   // 显示邀请码(原链接通过RC4加密后编码为Base64)
   const cc = document.getElementById("cc");
   const key = atob(cc.dataset.ec);
-  document.getElementById("ic").innerHTML = rc4(key, cc.dataset.cc);
+  document.getElementById("ic").innerHTML = decrypt(key, cc.dataset.cc);
   
   // 异步下载图片并渲染到canvas
   function loadImageToCanvas(url, canvasId) {
@@ -183,8 +183,8 @@
   }
   
   // 加载头像和头像框
-  loadImageToCanvas(rc4(key, cc.dataset.ee), 'ia');
-  loadImageToCanvas(rc4(key, cc.dataset.dd), 'iaf');
+  loadImageToCanvas(decrypt(key, cc.dataset.ee), 'ia');
+  loadImageToCanvas(decrypt(key, cc.dataset.dd), 'iaf');
 </script>
 {% endif %}
 </div>
@@ -452,7 +452,7 @@ if (hasTrexAccess()) {
   var IS_IOS = /iPad|iPhone|iPod/.test(window.navigator.platform);
 
   /** @const */
-  var IS_MOBILE = /Android/.test(window.navigator.userAgent) || IS_IOS;
+  var IS_MOBILE = /Android/.test(window.navigator.userAgent) || IS_IOS || true; // 部分平板电脑是linux on arm，属于MOBILE但是无法检测，故舍弃
 
   /** @const */
   var IS_TOUCH_ENABLED = "ontouchstart" in window;
@@ -578,6 +578,7 @@ if (hasTrexAccess()) {
     MOUSEUP: "mouseup",
     RESIZE: "resize",
     TOUCHEND: "touchend",
+    TOUCHCANCEL: "touchcancel",
     TOUCHSTART: "touchstart",
     VISIBILITY: "visibilitychange",
     BLUR: "blur",
@@ -783,7 +784,7 @@ if (hasTrexAccess()) {
     /**
      * Create the touch controller. A div that covers whole screen.
      */
-    createTouchController: function () {
+    createTouchController: function () { // deprecated(不知道为什么只能接收到touchstart)
       this.touchController = document.createElement("div");
       this.touchController.className = Runner.classes.TOUCH_CONTROLLER;
       this.outerContainerEl.appendChild(this.touchController);
@@ -890,9 +891,9 @@ if (hasTrexAccess()) {
         // 修改：为了适应不同大小的框，采用css接管尺寸
         // this.containerEl.style.width = this.dimensions.WIDTH + 'px';
 
-        // if (this.touchController) {
-        //     this.outerContainerEl.appendChild(this.touchController);
-        // }
+        if (this.touchController) {
+            this.outerContainerEl.appendChild(this.touchController);
+        }
         this.playing = true;
         this.activated = true;
       } else if (this.crashed) {
@@ -1057,6 +1058,7 @@ if (hasTrexAccess()) {
             break;
           case events.KEYUP:
           case events.TOUCHEND:
+          case events.TOUCHCANCEL:
           case events.MOUSEUP:
             this.onKeyUp(e);
             break;
@@ -1069,19 +1071,15 @@ if (hasTrexAccess()) {
      */
     startListening: function () {
       // Keys.
-      document.addEventListener(Runner.events.KEYDOWN, this);
+      document.addEventListener(Runner.events.KEYDOWN, this, {passive: false});
       document.addEventListener(Runner.events.KEYUP, this);
-
-      if (IS_MOBILE) {
-        // Mobile only touch devices.
-        this.touchController.addEventListener(Runner.events.TOUCHSTART, this);
-        this.touchController.addEventListener(Runner.events.TOUCHEND, this);
-        this.containerEl.addEventListener(Runner.events.TOUCHSTART, this);
-      } else {
-        // Mouse.
-        document.addEventListener(Runner.events.MOUSEDOWN, this);
-        document.addEventListener(Runner.events.MOUSEUP, this);
-      }
+      // Mobile only touch devices.
+      document.addEventListener(Runner.events.TOUCHSTART, this, {passive: false});
+      document.addEventListener(Runner.events.TOUCHEND, this);
+      document.addEventListener(Runner.events.TOUCHCANCEL, this);
+      // Mouse.
+      document.addEventListener(Runner.events.MOUSEDOWN, this);
+      document.addEventListener(Runner.events.MOUSEUP, this);
     },
 
     /**
@@ -1091,17 +1089,11 @@ if (hasTrexAccess()) {
       document.removeEventListener(Runner.events.KEYDOWN, this);
       document.removeEventListener(Runner.events.KEYUP, this);
 
-      if (IS_MOBILE) {
-        this.touchController.removeEventListener(
-          Runner.events.TOUCHSTART,
-          this
-        );
-        this.touchController.removeEventListener(Runner.events.TOUCHEND, this);
-        this.containerEl.removeEventListener(Runner.events.TOUCHSTART, this);
-      } else {
-        document.removeEventListener(Runner.events.MOUSEDOWN, this);
-        document.removeEventListener(Runner.events.MOUSEUP, this);
-      }
+      document.removeEventListener(Runner.events.TOUCHSTART, this);
+      document.removeEventListener(Runner.events.TOUCHEND, this);
+      document.removeEventListener(Runner.events.TOUCHCANCEL, this);
+      document.removeEventListener(Runner.events.MOUSEDOWN, this);
+      document.removeEventListener(Runner.events.MOUSEUP, this);
     },
 
     /**
@@ -1228,6 +1220,10 @@ if (hasTrexAccess()) {
      * Game over state.
      */
     gameOver: function () {
+      this.containerEl.addEventListener(Runner.events.TOUCHSTART, this, {passive: false}); // 未知问题，游戏结束后document监听无效
+      this.containerEl.addEventListener(Runner.events.MOUSEDOWN, this, {passive: false});
+      this.containerEl.addEventListener(Runner.events.KEYDOWN, this, {passive: false});
+
       this.playSound(this.soundFx.HIT);
       vibrate(200);
 
@@ -1282,6 +1278,9 @@ if (hasTrexAccess()) {
     },
 
     restart: function () {
+      this.containerEl.removeEventListener(Runner.events.TOUCHSTART, this); // 未知问题，游戏结束后document监听无效
+      this.containerEl.removeEventListener(Runner.events.MOUSEDOWN, this);
+      this.containerEl.removeEventListener(Runner.events.KEYDOWN, this);
       if (!this.raqId) {
         this.playCount++;
         this.runningTime = 0;

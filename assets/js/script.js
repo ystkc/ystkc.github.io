@@ -138,7 +138,8 @@ window.onload = async function () {
 };
 
 function goodMaomao() {
-  document.querySelector("#reminder").textContent = "可以查公告咯！【点此关闭游戏】"
+  document.querySelector("#reminder").textContent = "可以查公告咯！【点此关闭游戏】";
+  document.querySelector("#reminder").onclick = "document.getElementById('t-rex').remove(),document.getElementById('reminder').remove()";
   document.querySelector("#notice-input").disabled = false;
   document.querySelector("#notice-input").focus();
 }

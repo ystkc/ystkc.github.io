@@ -1,8 +1,10 @@
 :root {
   --white: rgb(255, 252, 244);
   --light-cyan: rgb(243, 255, 255);
+  --dark-cyan: rgb(224, 237, 237);
   --glass-panel-cyan: rgb(196, 231, 235);
   --light-grey: rgb(204, 219, 219);
+  --grey: rgb(169, 186, 186);
   --dark-grey: rgb(124, 136, 136);
   --black: rgb(33, 37, 41);
   --red: rgb(220, 53, 69);
@@ -18,9 +20,51 @@
         margin: 1rem 0.5rem 0 0.5rem;
     }
 }
+
+@media (prefers-color-scheme: dark) { 
+  .group {
+    color: #333;
+    background: var(--light-grey);
+    box-shadow: 0.2rem 0.2rem 0 0 rgba(255, 255, 255, 0.4);
+  }
+  .window-frame {
+    background: var(--light-grey);
+    border: solid 0.1rem var(--dark-grey);
+  }
+  .window {
+    background: var(--dark-cyan);
+    border: solid 0.1rem var(--grey);
+  }
+  .door, .door::before {
+    border: solid 0.1rem var(--dark-grey);
+  }
+  .door-glass {
+    border: solid 0.1rem rgb(120, 120, 121);
+  }
+}
+@media (prefers-color-scheme: light) { 
+  .group {
+    color: #333;
+    background: var(--white);
+    box-shadow: 0.2rem 0.2rem 0 0 rgba(0, 0, 0, 0.2);
+  }
+  .window-frame {
+    background: var(--white);
+    border: solid 0.1rem var(--grey);
+  }
+  .window {
+    background: var(--light-cyan);
+    border: solid 0.1rem var(--light-grey);
+  }
+  .door, .door::before {
+    border: solid 0.1rem var(--black);
+  }
+  .door-glass {
+    border: solid 0.1rem rgb(70, 87, 99);
+  }
+}
 .group {
     position: relative;
-    background: var(--white);
     padding: 0.5rem;
     padding-bottom: 0;
     margin: 0 0.3rem 1rem 0.3rem;
@@ -29,7 +73,6 @@
     height: 12rem;
     border: solid 0.1rem var(--black);
     border-radius: 1rem;
-    box-shadow: 0.2rem 0.2rem 0 0 rgba(0, 0, 0, 0.2);
     cursor: pointer;
 }
 
@@ -71,7 +114,6 @@ img[src=""] {
     right: 1rem;
     bottom: 0;
     background: rgb(211, 251, 244);
-    border: solid 0.1rem var(--black);
     border-bottom: none;
 }
 
@@ -83,7 +125,6 @@ img[src=""] {
     left: 0.3rem;
     top: 0.3rem;
     background: rgb(182, 228, 200);
-    border: solid 0.1rem var(--black);
     border-bottom: none;
 }
 
@@ -93,8 +134,6 @@ img[src=""] {
     height: 3rem;
     left: 1.8rem;
     margin-top: 0.9rem;
-    background: var(--light-cyan);
-    border: solid 0.1rem var(--light-grey);
 }
 
 .window-frame {
@@ -104,8 +143,6 @@ img[src=""] {
     height: 2.4rem;
     left: 0.2rem;
     margin-top: 0.2rem;
-    background: var(--white);
-    border: solid 0.1rem var(--dark-grey);
 }
 
 .window-panel {
@@ -134,7 +171,6 @@ img[src=""] {
     left: 0.8rem;
     top: 1.2rem;
     background: rgb(177, 224, 227);
-    border: solid 0.1rem rgb(70, 87, 99);
     box-shadow: inset 0 0 0.2rem 0.1rem rgba(0, 0, 0, 0.2);
     overflow: hidden;
 }
@@ -181,9 +217,9 @@ img[src=""] {
     content: '';
     z-index: 1;
     position: absolute;
-    height: 3rem;
+    height: 2.8rem;
     width: 0.3rem;
-    top: -0.5rem;
+    top: -0.2rem;
     left: 1.5rem;
     opacity: 0.5;
     background: white;
@@ -194,9 +230,9 @@ img[src=""] {
     content: '';
     z-index: 1;
     position: absolute;
-    height: 3rem;
+    height: 2.8rem;
     width: 1.8rem;
-    top: -0.5rem;
+    top: -0.2rem;
     left: 2.1rem;
     opacity: 0.5;
     background: white;

@@ -1,5 +1,7 @@
 # 递归扫描当前文件夹（包含子文件夹）下的所有md、markdown、html文件，找到最近创建或修改的10个文件，输出到latest.json文件中。
 import os
+import random
+import string
 import base64
 import json
 from datetime import datetime
@@ -212,6 +214,16 @@ def binaryTob64(binary: bytes) -> str:
     '''将二进制数据转换为base64字符串'''
     return base64.b64encode(binary).decode('utf-8')
 
+def b64Tobinary(b64: str) -> bytes:
+    '''将base64字符串转换为二进制数据'''
+    return base64.b64decode(b64)
+
+import secrets
+def randomKey() -> bytes:
+    '''生成随机密钥'''
+    # return random.choice(string.hexdigits.upper()).encode('utf-8')
+    return secrets.token_bytes(64)
+
 def updateGroupInfo(access_token: str, http2_client_obj: http2_cilent_m):
     '''从class.yml中读取班级列表并检查更新'''
     # 加载class.yml文件
@@ -231,28 +243,21 @@ def updateGroupInfo(access_token: str, http2_client_obj: http2_cilent_m):
         auth_data = getGroupInfo(access_token, share_key, http2_client_obj)
         group_info = auth_data.get('groupInfo', {})
         name = group_info.get('name', '')
-        RC4Key = group_initial_info.get('RC4Key', 'cereanilla')
-        RC4KeyEncrypted = group_initial_info.get('RC4KeyEncrypted', False)
-        RC4Keyb = RC4Key
-        if not RC4KeyEncrypted:
-            RC4Keyb = binaryTob64(RC4Key.encode('utf-8'))
-            RC4KeyEncrypted = True
-        else: # 将base64字符串转换为字节串
-            RC4Key = base64.b64decode(RC4Key).decode('utf-8')
+        RC4Key = randomKey()
         avatar = group_info.get('avatar')
         if avatar.startswith('/'): # 相对路径
             cdn = config_json.get('CDNURL')
             if not cdn:
                 raise ValueError('CDNURL不能为空')
             avatar = cdn + avatar
-        avatar = rc4(RC4Key.encode('utf-8'), avatar.encode('utf-8'))
+        avatar = rc4(RC4Key, avatar.encode('utf-8'))
         introduction = group_info.get('introduction', '')
         # inviteCode保持不变，此项为手动修改项
         rank = group_info.get('rank', '')
         avatar_frames = group_info.get('avatarFrame', {})
         if not avatar_frames: # 有可能是None
             avatar_frames = {}
-        avatar_frame = rc4(RC4Key.encode('utf-8'), avatar_frames.get('frame', '').encode('utf-8'))
+        avatar_frame = rc4(RC4Key, avatar_frames.get('frame', '').encode('utf-8'))
         leader_id = -1
         leader = ''
         finishing_rate = round(group_info.get('finishingRate', '')*100, 1)
@@ -265,24 +270,27 @@ def updateGroupInfo(access_token: str, http2_client_obj: http2_cilent_m):
         inviteCode = group_initial_info.get('inviteCode', '保密')
         if not inviteCodeEncrypted:
             # 使用RC4加密邀请码
-            inviteCode = binaryTob64(rc4(RC4Key.encode('utf-8'), inviteCode.encode('utf-8')))
             inviteCodeEncrypted = True
+        else:
+            # 先用原来的密钥解密
+            initKey = group_initial_info.get('key', '')
+            inviteCode = rc4(b64Tobinary(initKey), b64Tobinary(inviteCode)).decode('utf-8')
+        encryptedInviteCode = binaryTob64(rc4(RC4Key, inviteCode.encode('utf-8')))
         # 更新groups
         groups[share_key] = {
             'name': name,
             'avatar': binaryTob64(avatar),
             'intro': introduction,
-            'inviteCode': inviteCode,
+            'inviteCode': encryptedInviteCode,
             'inviteCodeEncrypted': inviteCodeEncrypted,
             'rank': rank,
             'avatar_frame': binaryTob64(avatar_frame),
             'leader_id': leader_id,
             'leader': leader,
             'finishing_rate': finishing_rate,
-            'RC4Key': RC4Keyb,
-            'RC4KeyEncrypted': RC4KeyEncrypted,
+            'key': binaryTob64(RC4Key)
         }
-        print(f"更新班级{name}完成：{share_key}，邀请码：{group_initial_info.get('inviteCode', '保密')}")
+        print(f"更新班级{name}完成：{share_key}，邀请码：{inviteCode}")
     # 更新config
     config['updateAt'] = int(time.time())
     config['groups'] = groups
