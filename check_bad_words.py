@@ -24,25 +24,32 @@ if '--enhanced' in os.sys.argv:
     enhanced = True
 
 bad_words = []
-if not enhanced:
-    print("如果要检查已有违禁词，请保存到bad_words.json或bad_words.txt文件中，启动时会自动读取。")
-    print("bad_words.json会被覆盖。bad_words.txt不会被覆盖。现有违禁词：")
-    if os.path.exists('./assets/bad_words.json'):
-        with open('./assets/bad_words.json', 'r', encoding='utf-8') as f:
-            bad_words = json.load(f)
-else:
+enhanced_bad_words = []
+print("bad_words.json会被覆盖。bad_words.txt不会被覆盖。现有违禁词：")
+if os.path.exists('./assets/bad_words.json'):
+    with open('./assets/bad_words.json', 'r', encoding='utf-8') as f:
+        bad_words = json.load(f)
+if os.path.exists('./assets/enhanced_bad_words.json'):
+    with open('./assets/enhanced_bad_words.json', 'r', encoding='utf-8') as f:
+        enhanced_bad_words = json.load(f)
+if enhanced:
+    print("当前编辑的是\033[1;31menhanced_\033[0mbad_words.json]]")
     print("如果要检查已有违禁词，请保存到\033[1;31menhanced_\033[0mbad_words.json或bad_words.txt文件中，启动时会自动读取。")
-    print("bad_words.json会被覆盖。bad_words.txt不会被覆盖。现有违禁词：")
-    if os.path.exists('./assets/enhanced_bad_words.json'):
-        with open('./assets/enhanced_bad_words.json', 'r', encoding='utf-8') as f:
-            bad_words = json.load(f)
+    print("\033[1;31menhanced_\033[0mbad_words.json会被覆盖。\033[1;31menhanced_\033[0mbad_words.txt不会被覆盖。")
+else:
+    print("当前编辑的是bad_words")
+    print("如果要检查已有违禁词，请保存到bad_words.json或bad_words.txt文件中，启动时会自动读取。")
+    print("bad_words.json会被覆盖。bad_words.txt不会被覆盖")
+
+print(f"共有{len(bad_words)}个违禁词")
 print(bad_words)
-print(len(bad_words))
+print(f"\n\n共有{len(enhanced_bad_words)}个加强违禁词")
+print(enhanced_bad_words)
+
 if os.path.exists('bad_words.txt'):
     with open('bad_words.txt', 'r', encoding='utf-8') as f:
         bad_words.extend(f.read().splitlines())
 bad_words = list(set(bad_words))
-invalid_bad_words = []
 
 accept_notice = ""
 if os.path.exists('accept_notice.txt'):
@@ -114,18 +121,26 @@ def cbw(check_word, accept_notice):
             return '|'.join(result)
     return ""
 
+invalid_bad_words = []
+def filter(bad_words):
+    for check_word in bad_words:
+        result = cbw(check_word, accept_notice)
+        if result != "":
+            print(f'{check_word} \033[33m已存在于被接受的通知中\033[0mresult:{result}')
+            if check_word[0] != '!':
+                bad_words.remove(check_word)
+                invalid_bad_words.append(check_word)
+            else:
+                print(f"黑名单【保留】：{check_word[1:]}")
+    return bad_words
 
-for check_word in bad_words:
-    result = cbw(check_word, accept_notice)
-    if result != "":
-        print(f'{check_word} \033[33m已存在于被接受的通知中\033[0mresult:{result}')
-        if check_word[0] != '!':
-            bad_words.remove(check_word)
-            invalid_bad_words.append(check_word)
-        else:
-            print(f"黑名单【保留】：{check_word[1:]}")
+bad_words = filter(bad_words)
+enhanced_bad_words = filter(enhanced_bad_words)
 
 check_word = input('请输入要检查/添加的词，一行一个!强制?取消强制#退出：')
+if enhanced:
+    # 交换
+    bad_words, enhanced_bad_words = enhanced_bad_words, bad_words
 no_check = False
 while check_word!= '#':
     no_check = False
@@ -163,34 +178,38 @@ while check_word!= '#':
     check_word = input('请输入要检查/添加的词，一行一个#退出：')
 
 print(bad_words)
-pyperclip.copy(' '.join(bad_words))
-input('已拷贝违禁词，换行继续拷贝失效违禁词')
-pyperclip.copy(' '.join(invalid_bad_words))
-input('已拷贝失效违禁词，换行继续输出到文件')
+input('编辑完成，换行继续输出到文件')
 
-if not enhanced:
-    # if input('已拷贝结果。是否输出到bad_words.bin和json？y/n') == 'y':
-        with open("./assets/bad_words.json", "w", encoding="utf-8") as f:
-            json.dump(bad_words, f, ensure_ascii=False)
-        # 去除叹号
-        for i in range(len(bad_words)):
-            if bad_words[i][0] == '!':
-                bad_words[i] = bad_words[i][1:]
-        with open("./assets/bad_words.bin", "wb") as f:
-            f.write(encoder(json.dumps(bad_words, ensure_ascii=False)))
-        # 输出到zip文件
-        with zipfile.ZipFile('./assets/bad_words.bin.zip', 'w', zipfile.ZIP_DEFLATED) as zf:
-            zf.write('./assets/bad_words.bin', arcname='bad_words.bin')
-else:
-    # if input('已拷贝结果。是否输出到\033[1;31menhanced_\033[0mbad_words.bin和json？y/n') == 'y':
-        with open("./assets/enhanced_bad_words.json", "w", encoding="utf-8") as f:
-            json.dump(bad_words, f, ensure_ascii=False)
-        # 去除叹号
-        for i in range(len(bad_words)):
-            if bad_words[i][0] == '!':
-                bad_words[i] = bad_words[i][1:]
-        with open("./assets/enhanced_bad_words.bin", "wb") as f:
-            f.write(encoder(json.dumps(bad_words, ensure_ascii=False)))
-        # 输出到zip文件
-        with zipfile.ZipFile('./assets/enhanced_bad_words.bin.zip', 'w', zipfile.ZIP_DEFLATED) as zf:
-            zf.write('./assets/enhanced_bad_words.bin', arcname='enhanced_bad_words.bin')
+# 交换回来
+if enhanced:
+    bad_words, enhanced_bad_words = enhanced_bad_words, bad_words
+try:
+# if input('已拷贝结果。是否输出到bad_words.bin和json？y/n') == 'y':
+    with open("./assets/bad_words.json", "w", encoding="utf-8") as f:
+        json.dump(bad_words, f, ensure_ascii=False)
+    # 去除叹号
+    for i in range(len(bad_words)):
+        if bad_words[i][0] == '!':
+            bad_words[i] = bad_words[i][1:]
+    with open("./assets/bad_words.bin", "wb") as f:
+        f.write(encoder(json.dumps(bad_words, ensure_ascii=False)))
+    # 输出到zip文件
+    with zipfile.ZipFile('./assets/bad_words.bin.zip', 'w', zipfile.ZIP_DEFLATED) as zf:
+        zf.write('./assets/bad_words.bin', arcname='bad_words.bin')
+
+
+# if input('已拷贝结果。是否输出到\033[1;31menhanced_\033[0mbad_words.bin和json？y/n') == 'y':
+    with open("./assets/enhanced_bad_words.json", "w", encoding="utf-8") as f:
+        json.dump(enhanced_bad_words, f, ensure_ascii=False)
+    # 去除叹号
+    for i in range(len(enhanced_bad_words)):
+        if enhanced_bad_words[i][0] == '!':
+            enhanced_bad_words[i] = enhanced_bad_words[i][1:]
+    with open("./assets/enhanced_bad_words.bin", "wb") as f:
+        f.write(encoder(json.dumps(enhanced_bad_words, ensure_ascii=False)))
+    # 输出到zip文件
+    with zipfile.ZipFile('./assets/enhanced_bad_words.bin.zip', 'w', zipfile.ZIP_DEFLATED) as zf:
+        zf.write('./assets/enhanced_bad_words.bin', arcname='enhanced_bad_words.bin')
+except Exception as e:
+    print(e)
+    input('发生错误，请检查')
