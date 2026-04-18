@@ -126,7 +126,7 @@ window.onload = async function () {
     document.querySelector("#notice-input").value = "";
     document.querySelector("#results").innerHTML += "初始化完成！<br>";
     document.querySelector("#date").innerHTML =
-      acceptWords[0] + ",共收录" + badWords.length + "个违禁词";
+      acceptWords[0] + ",共收录" + (badWords.length + enhancedBadWords.length) + "个违禁词";
     const hasTrexCookie = document.cookie.includes("trex_access");
     if (hasTrexCookie) {
       document.querySelector("#reminder").textContent = "你需要让小恐龙获得201分才能查违禁词哦！";

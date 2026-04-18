@@ -1,6 +1,6 @@
 ---
 layout: sidebar
-title: 1.答疑（班长栏目） - 如何将解绑手机号、换成qq微信登录？
+title: 1.答疑（班长栏目） - 如何解绑手机号、换成qq微信登录？
 author: Cereanilla麦花
 subtitle: .
 ---

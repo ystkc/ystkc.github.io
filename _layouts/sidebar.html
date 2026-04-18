@@ -110,81 +110,84 @@
 <div id="cc" data-cc="{{ group.inviteCode }}" data-dd="{{ group.avatar_frame }}" data-ee="{{ group.avatar }}" data-ec="{{ group.key }}"></div>
 <script>
   // 这段脚本应当加密
-  function decrypt(key, data) {
-    // 将输入转换为Uint8Array
-    const keyBytes = new TextEncoder().encode(key);
-    const dataBytes = Uint8Array.from(atob(data), c => c.charCodeAt(0));
-    
-    // KSA: Key Scheduling Algorithm
-    const S = new Array(256);
-    for (let i = 0; i < 256; i++) {
-      S[i] = i;
-    }
-    let j = 0;
-    const keyLen = keyBytes.length;
-    for (let i = 0; i < 256; i++) {
-      j = (j + S[i] + keyBytes[i % keyLen]) & 0xFF;
-      [S[i], S[j]] = [S[j], S[i]];
-    }
-    
-    // PRGA: Pseudo-Random Generation Algorithm
-    let i = 0;
-    j = 0;
-    const result = new Uint8Array(dataBytes.length);
-    for (let idx = 0; idx < dataBytes.length; idx++) {
-      i = (i + 1) & 0xFF;
-      j = (j + S[i]) & 0xFF;
-      [S[i], S[j]] = [S[j], S[i]];
-      const k = S[(S[i] + S[j]) & 0xFF];
-      result[idx] = dataBytes[idx] ^ k;
-    }
-    
-    return new TextDecoder().decode(result);
-  }
-  
-  // 显示邀请码(原链接通过RC4加密后编码为Base64)
-  const cc = document.getElementById("cc");
-  const key = atob(cc.dataset.ec);
-  document.getElementById("ic").innerHTML = decrypt(key, cc.dataset.cc);
-  
-  // 异步下载图片并渲染到canvas
-  function loadImageToCanvas(url, canvasId) {
-    const canvas = document.getElementById(canvasId);
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = function() {
-      // 清除画布
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // 绘制图片
-      if (canvasId === 'ia') {
-        // 头像：80%大小，居中绘制
-        const size = canvas.width * 0.8;
-        const x = (canvas.width - size) / 2;
-        const y = (canvas.height - size) / 2;
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(canvas.width / 2, canvas.height / 2, size / 2, 0, 2 * Math.PI);
-        ctx.clip();
-        ctx.drawImage(img, x, y, size, size);
-        ctx.restore();
-        // 添加边框
-        ctx.beginPath();
-        ctx.arc(canvas.width / 2, canvas.height / 2, size / 2, 0, 2 * Math.PI);
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      } else if (canvasId === 'iaf') {
-        // 头像框：100%大小
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  function c() {
+    function decrypt(key, data) {
+      // 将输入转换为Uint8Array
+      const keyBytes = Uint8Array.from((key), c => c.charCodeAt(0));
+      const dataBytes = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+      
+      // KSA: Key Scheduling Algorithm
+      const S = new Array(256);
+      for (let i = 0; i < 256; i++) {
+        S[i] = i;
       }
-    };
-    img.src = url;
+      let j = 0;
+      const keyLen = keyBytes.length;
+      for (let i = 0; i < 256; i++) {
+        j = (j + S[i] + keyBytes[i % keyLen]) & 0xFF;
+        [S[i], S[j]] = [S[j], S[i]];
+      }
+      
+      // PRGA: Pseudo-Random Generation Algorithm
+      let i = 0;
+      j = 0;
+      const result = new Uint8Array(dataBytes.length);
+      for (let idx = 0; idx < dataBytes.length; idx++) {
+        i = (i + 1) & 0xFF;
+        j = (j + S[i]) & 0xFF;
+        [S[i], S[j]] = [S[j], S[i]];
+        const k = S[(S[i] + S[j]) & 0xFF];
+        result[idx] = dataBytes[idx] ^ k;
+      }
+      
+      return new TextDecoder().decode(result);
+    }
+    
+    // 显示邀请码(原链接通过RC4加密后编码为Base64)
+    const cc = document.getElementById("cc");
+    const key = atob(cc.dataset.ec);
+    document.getElementById("ic").innerHTML = decrypt(key, cc.dataset.cc);
+    
+    // 异步下载图片并渲染到canvas
+    function loadImageToCanvas(url, canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        // 清除画布
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // 绘制图片
+        if (canvasId === 'ia') {
+          // 头像：80%大小，居中绘制
+          const size = canvas.width * 0.8;
+          const x = (canvas.width - size) / 2;
+          const y = (canvas.height - size) / 2;
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(canvas.width / 2, canvas.height / 2, size / 2, 0, 2 * Math.PI);
+          ctx.clip();
+          ctx.drawImage(img, x, y, size, size);
+          ctx.restore();
+          // 添加边框
+          ctx.beginPath();
+          ctx.arc(canvas.width / 2, canvas.height / 2, size / 2, 0, 2 * Math.PI);
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        } else if (canvasId === 'iaf') {
+          // 头像框：100%大小
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+      };
+      img.src = url;
+    }
+    
+    // 加载头像和头像框
+    loadImageToCanvas(decrypt(key, cc.dataset.ee), 'ia');
+    loadImageToCanvas(decrypt(key, cc.dataset.dd), 'iaf');
   }
-  
-  // 加载头像和头像框
-  loadImageToCanvas(decrypt(key, cc.dataset.ee), 'ia');
-  loadImageToCanvas(decrypt(key, cc.dataset.dd), 'iaf');
+  c();
 </script>
 {% endif %}
 </div>
