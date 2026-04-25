@@ -137,16 +137,13 @@ def filter(bad_words):
 bad_words = filter(bad_words)
 enhanced_bad_words = filter(enhanced_bad_words)
 
-check_word = input('请输入要检查/添加的词，一行一个!强制?取消强制#退出：')
+check_word = input('请输入要检查/添加的词，一行一个，!强制?取消强制-移除#退出：')
 if enhanced:
     # 交换
     bad_words, enhanced_bad_words = enhanced_bad_words, bad_words
 no_check = False
 while check_word!= '#':
-    no_check = False
-    if check_word[0] == '!':
-        no_check = True
-    elif check_word[0] == '?':
+    if check_word[0] == '?':
         check_word = check_word[1:]
         for i in range(len(bad_words)):
             if bad_words[i][0] == '!' and bad_words[i][1:] == check_word:
@@ -163,6 +160,9 @@ while check_word!= '#':
         except ValueError:
             print(f'{check_word} \033[31m不存在\033[0m')
     else:
+        no_check = False
+        if check_word[0] == '!':
+            no_check = True
         if check_word in bad_words:
             print(f'{check_word} \033[32m已存在于黑名单中\033[0m')
         else:
