@@ -3357,12 +3357,14 @@ if (hasTrexAccess()) {
 }
 </script>
 <script> // 用于玩小恐龙时防止空格滚动的模块
-document.onkeydown = function (evt) {
-  evt = evt || window.event; // 如果小恐龙游戏还存在，则取消空格默认滚动行为
-  if (evt.keyCode == 32 && document.querySelector("#t-rex")) {
-    evt.preventDefault();
-  }
-};
+if (hasTrexAccess()) {
+  document.onkeydown = function (evt) {
+    evt = evt || window.event; // 如果小恐龙游戏还存在，则取消空格默认滚动行为
+    if (evt.keyCode == 32 && document.querySelector("#t-rex")) {
+      evt.preventDefault();
+    }
+  };
+}
 </script>
     
 {% endif %}

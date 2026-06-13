@@ -42,9 +42,9 @@ else:
     print("bad_words.json会被覆盖。bad_words.txt不会被覆盖")
 
 print(f"共有{len(bad_words)}个违禁词")
-print(bad_words)
+print(str(bad_words).replace('!', '\033[1;31m!\033[0m'))
 print(f"\n\n共有{len(enhanced_bad_words)}个加强违禁词")
-print(enhanced_bad_words)
+print(str(enhanced_bad_words).replace('!', '\033[1;31m!\033[0m'))
 
 if os.path.exists('bad_words.txt'):
     with open('bad_words.txt', 'r', encoding='utf-8') as f:
@@ -56,30 +56,10 @@ if os.path.exists('accept_notice.txt'):
     with open("accept_notice.txt", "r", encoding="utf-8") as f:
         accept_notice = f.read()
 
-replace_dict = {
-    '一': '1',
-    '二': '2',
-    '三': '3',
-    '四': '4',
-    '五': '5',
-    '六': '6',
-    '七': '7',
-    '八': '8',
-    '九': '9',
-    '零': '0',
-    '壹': '1',
-    '贰': '2',
-    '叁': '3',
-    '肆': '4',
-    '伍': '5',
-    '陆': '6',
-    '柒': '7',
-    '捌': '8',
-    '玖': '9',
-    '貮': '2',
-    '两': '2',
-    '〇': '0'
-}
+try:
+    replace_dict = json.load(open('./assets/replace_dict.jsonl', 'r', encoding='utf-8'))
+except:
+    replace_dict = {}
 def cbw(check_word, accept_notice):
     if check_word[0] == '!' or check_word[0] == '?':
         check_word = check_word[1:]
@@ -137,7 +117,8 @@ def filter(bad_words):
 bad_words = filter(bad_words)
 enhanced_bad_words = filter(enhanced_bad_words)
 
-check_word = input('请输入要检查/添加的词，一行一个，!强制?取消强制-移除#退出：')
+INPUT_PROMPT = '请输入要检查/添加的词，一行一个，!强制?取消强制-移除 末尾+表数字违禁 #退出：'
+check_word = input(INPUT_PROMPT)
 if enhanced:
     # 交换
     bad_words, enhanced_bad_words = enhanced_bad_words, bad_words
@@ -163,6 +144,13 @@ while check_word!= '#':
         no_check = False
         if check_word[0] == '!':
             no_check = True
+        plus_number = False
+        if check_word[-1] == '+':
+            if check_word[0] == '!':
+                check_word = check_word[1:]
+            check_word = '/'+check_word[:-1]+'(?:.{0,10}?)[0-9]{3,}/'
+        # /something(?:.{0,10}?)[a-zA-Z0-9]{3,}/
+        # /something(?:[^\n]{0,10}?)[a-zA-Z0-9]{3,}/
         if check_word in bad_words:
             print(f'{check_word} \033[32m已存在于黑名单中\033[0m')
         else:
@@ -175,8 +163,8 @@ while check_word!= '#':
             else:
                 bad_words.append(check_word)
                 print(f'{check_word} 已添加到黑名单中')
-    check_word = input('请输入要检查/添加的词，一行一个#退出：')
-
+    check_word = input(INPUT_PROMPT)
+    
 print(bad_words)
 input('编辑完成，换行继续输出到文件')
 
@@ -187,10 +175,10 @@ try:
 # if input('已拷贝结果。是否输出到bad_words.bin和json？y/n') == 'y':
     with open("./assets/bad_words.json", "w", encoding="utf-8") as f:
         json.dump(bad_words, f, ensure_ascii=False)
-    # 去除叹号
-    for i in range(len(bad_words)):
-        if bad_words[i][0] == '!':
-            bad_words[i] = bad_words[i][1:]
+    # 去除叹号 # 现在需要区分强制和非强制
+    # for i in range(len(bad_words)):
+    #     if bad_words[i][0] == '!':
+    #         bad_words[i] = bad_words[i][1:]
     with open("./assets/bad_words.bin", "wb") as f:
         f.write(encoder(json.dumps(bad_words, ensure_ascii=False)))
     # 输出到zip文件
@@ -201,10 +189,10 @@ try:
 # if input('已拷贝结果。是否输出到\033[1;31menhanced_\033[0mbad_words.bin和json？y/n') == 'y':
     with open("./assets/enhanced_bad_words.json", "w", encoding="utf-8") as f:
         json.dump(enhanced_bad_words, f, ensure_ascii=False)
-    # 去除叹号
-    for i in range(len(enhanced_bad_words)):
-        if enhanced_bad_words[i][0] == '!':
-            enhanced_bad_words[i] = enhanced_bad_words[i][1:]
+    # 去除叹号 # 现在需要区分强制和非强制
+    # for i in range(len(enhanced_bad_words)):
+    #     if enhanced_bad_words[i][0] == '!':
+    #         enhanced_bad_words[i] = enhanced_bad_words[i][1:]
     with open("./assets/enhanced_bad_words.bin", "wb") as f:
         f.write(encoder(json.dumps(enhanced_bad_words, ensure_ascii=False)))
     # 输出到zip文件

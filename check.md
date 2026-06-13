@@ -31,13 +31,14 @@ if (!hasTrexAccess()) {
   document.getElementById('reminder').style.display = 'none';
 }
 </script>
-<br><button id="search-btn" class="btn" onclick="check_notice()">Check</button><br><input checked type="checkbox" style="width: 30px; height: 30px;" id="enhanced-check">加强词典
+<br><span><button id="search-btn" class="btn" onclick="check_notice()">Check</button>加强词典<input checked type="checkbox" style="width: 30px; height: 30px;" id="enhanced-check"></span>
 <div id="matches"></div>
 <div id="warn">本工具与百词斩官方无关，违禁词为用户收集<br><span style="color:red;" id="warn">使用本工具代表您确认自己的内容合法合规<br>如用于传播不良信息产生的包括但不限于封号的后果由您自负</span><br>
-<div>详细检查结果：<span class="pink" title="根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">确定的违禁词汇</span>
+<div id="legend">详细检查结果：<span class="violet" title="根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">确定的违禁词汇</span>
 <span class="orange" title="收集坚果墙等等通用违禁词库，范围更广，但很可能有误报" onclick="alert(this.title)">增强版违禁词汇</span>
-<span class="aquamarine" title="收集近两周通过的公告筛选得到，一般没问题" onclick="alert(this.title)">没问题的内容</span>
-<span class="yellow" title="收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">疑似违禁</span></div>
+<span class="pink" title="单独能发出去，但如果与其他内容一起发送就可能发不出去" onclick="alert(this.title)">轻微违禁词汇</span>
+<span class="yellow" title="收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">疑似违禁</span>
+<span class="aquamarine" title="收集近两周通过的公告筛选得到，一般没问题" onclick="alert(this.title)">没问题的内容</span></div>
 <hr>
 <div id="results"></div>
 <hr>

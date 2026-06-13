@@ -1,4 +1,9 @@
-function encoder(array, no_convert = false) {
+function arraybuffer2string(arraybuffer) {
+  const processedArray = new Uint8Array(arraybuffer);
+  return new TextDecoder("utf-8").decode(processedArray);
+}
+function encoder(array) {
+  // both input and output are ArrayBuffer
   const byteArray = new Uint8Array(array);
   let result = [];
   let index = 0;
@@ -11,12 +16,10 @@ function encoder(array, no_convert = false) {
     }
     result.push(byteArray[i] ^ 0x1f);
   }
-  if (no_convert) return result;
-  const processedArray = new Uint8Array(result);
-  return new TextDecoder("utf-8").decode(processedArray);
+  return result;
 }
 
-async function fetchBin(url, index, total) {
+async function fetchBin(url, index, total, encoder=true) {
   return await fetch(url.replace(".zip", ""))
     .then((response) => {
       if (!response.ok) {
@@ -28,7 +31,11 @@ async function fetchBin(url, index, total) {
       document.querySelector(
         "#results"
       ).innerHTML += `第 ${index}/${total} 个词库加载完成！<br>`;
-      return JSON.parse(encoder(data));
+      if (encoder) {
+        return JSON.parse(arraybuffer2string(encoder(data)));
+      } else {
+        return JSON.parse(arraybuffer2string(data));
+      }
     })
     .catch((error) => {
       console.error(error);
@@ -65,9 +72,9 @@ async function fetchBinAndUnzip(url, index, total, is_json = true) {
             "#notice-input"
           ).value += `\n第 ${index}/${total} 个词库加载完成！`;
           if (is_json) {
-            return JSON.parse(encoder(data));
+            return JSON.parse(arraybuffer2string(encoder(data)));
           } else {
-            return encoder(data).split("\n");
+            return arraybuffer2string(encoder(data)).split("\n");
           }
         });
     })
@@ -85,17 +92,19 @@ const acceptWordsUrl = "/assets/accept_words.bin.zip";
 const badWordsUrl = "/assets/bad_words.bin.zip";
 const enhancedBadWordsUrl = "/assets/enhanced_bad_words.bin.zip";
 const warnWordsUrl = "/assets/warn_words.bin.zip";
+const replaceMapUrl = "/assets/replace_map.jsonl";
 
-let badWords, enhancedBadWords, acceptWords, warnWords;
-let acceptWordsSet, warnWordsSet, badWordsSet, enhancedBadWordsSet;
+let badWords, enhancedBadWords, acceptWords, warnWords, replaceMap;
+let acceptWordsSet, warnWordsSet, badWordsSet, mildBadWordsSet, enhancedBadWordsSet;
 let initStatus = 0;
 async function init() {
   url = window.location.origin;
-  [badWords, acceptWords, enhancedBadWords, warnWords] = await Promise.all([
-    fetchBinAndUnzip(url + badWordsUrl, 1, 4),
-    fetchBinAndUnzip(url + acceptWordsUrl, 2, 4, false),
-    fetchBinAndUnzip(url + enhancedBadWordsUrl, 3, 4),
-    fetchBinAndUnzip(url + warnWordsUrl, 4, 4, false),
+  [badWords, acceptWords, enhancedBadWords, warnWords, replaceMap] = await Promise.all([
+    fetchBinAndUnzip(url + badWordsUrl, 1, 5),
+    fetchBinAndUnzip(url + acceptWordsUrl, 2, 5, false),
+    fetchBinAndUnzip(url + enhancedBadWordsUrl, 3, 5),
+    fetchBinAndUnzip(url + warnWordsUrl, 4, 5, false),
+    fetchBin(url + replaceMapUrl, 5, 5, false),
   ]);
   if (
     badWords === undefined ||
@@ -109,7 +118,10 @@ async function init() {
 
   acceptWordsSet = new Set(acceptWords.slice(1));
   warnWordsSet = new Set(warnWords);
-  badWordsSet = new Set(badWords);
+  const mildBadWords = badWords.filter(word => word.startsWith("!"));
+  const remainingBadWords = badWords.filter(word => !word.startsWith("!"));
+  badWordsSet = new Set(remainingBadWords);
+  mildBadWordsSet = new Set(mildBadWords.map(word => word.slice(1)));
   enhancedBadWordsSet = new Set(enhancedBadWords);
   initStatus = 1;
 }
@@ -167,43 +179,23 @@ function check_notice() {
     }
 
     function setInvalidStorage(invalidStorage, position, char, length = 1) {
+      // 如果设置的invalid已经存在，那么返回false
+      nothingChanged = true;
       for (let i = position; i < position + length; i++) {
         if (!(i in invalidStorage)) {
-          invalidStorage[i] = [char];
-        } else {
-          invalidStorage[i].push(char);
+          invalidStorage[i] = [];
         }
+        if (!(char in invalidStorage[i])) nothingChanged = false;
+        invalidStorage[i].push(char);
       }
+      return !nothingChanged;
     }
 
     function sliceInvalidChar(text) {
       // const invalidChars = [',', '.', '!', '?', ':', ';', '，', '。', '！', '？', '：', '；','\n',' ','/','"',"'",'、','‘','’','“','”','(',')','（','）','~','*','@','～','【','】','《','》','[',']','%','％']
-      const pattern =
-        /[^\w\d\u4e00-\u9fa5\u2700-\u27bf\u{1F650}-\u{1F67F}\u{1F600}-\u{1F64F}\u2600-\u26FF\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}\u{1F680}-\u{1F6FF}\u{1F100}-\u{1F1FF}\u{1F200}-\u{1F2FF}]/u;
-
-      const replaceMap = {
-        一: "1",
-        二: "2",
-        三: "3",
-        四: "4",
-        五: "5",
-        六: "6",
-        七: "7",
-        八: "8",
-        九: "9",
-        零: "0",
-        壹: "1",
-        贰: "2",
-        叁: "3",
-        肆: "4",
-        伍: "5",
-        陆: "6",
-        柒: "7",
-        捌: "8",
-        玖: "9",
-        两: "2",
-        〇: "0",
-      };
+      // const pattern = /[^\w\d\u4e00-\u9fa5\u2700-\u27bf\u{1F650}-\u{1F67F}\u{1F600}-\u{1F64F}\u2600-\u26FF\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}\u{1F680}-\u{1F6FF}\u{1F100}-\u{1F1FF}\u{1F200}-\u{1F2FF}]/u;
+      // const pattern = /[,!.?;:，。！？：；\n /"\',、‘’“”()（）~*@～【】《》[\]%％]/g;
+      const pattern = /[\n ]/g;
       const invalidStorage = {};
       let position = 0;
       let newText = "";
@@ -225,8 +217,9 @@ function check_notice() {
           setInvalidStorage(invalidStorage, position, char);
           i++; // 继续检查下一个字符
           if (doubleChar) position--; // 双字符的一点小问题
-        } else if (char in replaceMap) {
+        } else if (char in replaceMap) { // 特殊形式的字母、数字，替换为常规形式
           newText += replaceMap[char];
+          console.log(newText);
           setInvalidStorage(invalidStorage, position, char);
           position++;
           i++; // 继续检查下一个字符
@@ -252,35 +245,14 @@ function check_notice() {
 
     function restoreInvalidChar(text, invalidStorage, initialStorage) {
       let bad = false;
+      let mildBad = false;
       let accept = false;
       let warn = false;
       let enhance = false;
       let doubleChar = false;
       let newText = "";
       let temp_text = "";
-      const replaceList = [
-        "一",
-        "二",
-        "三",
-        "四",
-        "五",
-        "六",
-        "七",
-        "八",
-        "九",
-        "零",
-        "壹",
-        "贰",
-        "叁",
-        "肆",
-        "伍",
-        "陆",
-        "柒",
-        "捌",
-        "玖",
-        "两",
-        "〇",
-      ];
+      const replaceList = Object.keys(replaceMap);
       text += " ";
       for (
         let textPosition = 0, position = 0;
@@ -300,7 +272,7 @@ function check_notice() {
           let cnt = 0,
             index = 0;
           for (let i = 0; i < invalidStorage[position].length; i++) {
-            if (invalidStorage[position][i] == "c") {
+            if (invalidStorage[position][i] == "d") {
               cnt++;
               index = i;
             }
@@ -312,7 +284,7 @@ function check_notice() {
             invalidStorage[position].splice(index, 1); // 注释掉本行可以减少嫌疑词以提升观感，但会漏掉一些。暂无更优解
           } else if (cnt == 0) {
             // 原本有嫌疑词字典，但资源开销太高，因此使用低配版预测
-            minChar = "d";
+            minChar = "e";
           }
 
           for (const char of invalidStorage[position]) {
@@ -331,65 +303,85 @@ function check_notice() {
             } else { // 是无效字符，取消所有控制色
               newText += "</span>" + char;
               bad = false;
+              mildBad = false;
               accept = false;
               warn = false;
               enhance = false;
             }
           }
           if (minChar === "b" && !bad) {
-            if (accept || warn || enhance) {
+            if (mildBad || accept || warn || enhance) {
               newText += "</span>";
+              mildBad = false;
               accept = false;
               warn = false;
               enhance = false;
             }
             newText +=
-              '<span class="bad pink" title="95%可能是违禁词。根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">';
+              '<span class="bad violet" title="95%可能是违禁词。根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">';
             bad = true;
-          } else if (minChar === "c" && !accept) {
-            if (bad || warn || enhance) {
+          } else if (minChar === "c" && !mildBad) {
+            if (bad || accept || warn || enhance) {
               newText += "</span>";
               bad = false;
+              accept = false;
+              warn = false;
+              enhance = false;
+            }
+            newText +=
+              '<span class="mildbad pink" title="单独能发出去，但如果与其他内容一起发送就可能发不出去" onclick="alert(this.title)">';
+            mildBad = true;
+          } else if (minChar === "d" && !accept) {
+            if (bad || mildBad || warn || enhance) {
+              newText += "</span>";
+              bad = false;
+              mildBad = false;
               warn = false;
               enhance = false;
             }
             newText +=
               '<span class="accept aquamarine" title="95%可能是没问题的内容。收集通过的公告筛选得到，一般没问题" onclick="alert(this.title)">';
             accept = true;
-          } else if (minChar === "d" && !warn) {
-            if (bad || accept || enhance) {
-              newText += "</span>";
-              bad = false;
-              accept = false;
-            }
-            newText +=
-              '<span class="warn yellow" title="这是疑似违禁词，大约10%可能性。收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">';
-            warn = true;
           } else if (minChar === "a" && !enhance) {
-            if (bad || accept || warn) {
+            if (bad || mildBad || accept || warn) {
               newText += "</span>";
               bad = false;
+              mildBad = false;
               accept = false;
               warn = false;
             }
             newText +=
               '<span class="enhance orange" title="这是通用违禁词，大约30%可能性。收集坚果墙等等通用违禁词库，范围广但容易误报" onclick="alert(this.title)">';
             enhance = true;
-          } else if (minChar === "z" && (bad || accept || warn || enhance)) {
+          } else if (minChar === "e" && !warn) {
+            if (bad || mildBad || accept || enhance) {
+              newText += "</span>";
+              bad = false;
+              mildBad = false;
+              accept = false;
+              enhance = false;
+            }
+            newText +=
+              '<span class="warn yellow" title="这是疑似违禁词，大约10%可能性。收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">';
+            warn = true;
+          } else if (minChar === "z" && (bad || mildBad || accept || warn || enhance)) {
             newText += "</span>";
             bad = false;
+            mildBad = false;
             accept = false;
             warn = false;
             enhance = false;
           }
-        } else if (bad || accept || warn || enhance) {
+        } else if (bad || mildBad || accept || warn || enhance) {
           newText += "</span>";
           bad = false;
+          mildBad = false;
           accept = false;
           warn = false;
           enhance = false;
         }
         newText += temp_text;
+        console.log(newText);
         if (doubleChar) {
           textPosition++;
           position++;
@@ -413,8 +405,9 @@ function check_notice() {
             pos += tempValidInputStr.indexOf(match[i]);
             length = match[i].length;
             tempValidInputStr = validInputStr.slice(pos + length);
-            setInvalidStorage(invalidStorage, pos, type, length);
-            matchedList.push(match[i]);
+            console.log(pos, length, match[i], type);
+            if(setInvalidStorage(invalidStorage, pos, type, length))
+              matchedList.push(match[i]);
             pos += length;
           }
         } else if (pattern.includes("|")) {
@@ -434,22 +427,24 @@ function check_notice() {
             }
           }
           if (multiple_valid) {
-            matchedList.push(pattern);
+            var anythingChanged = false;
             for (let i in pos_list) {
-              setInvalidStorage(
+              anythingChanged |= setInvalidStorage(
                 invalidStorage,
                 pos_list[i],
                 type,
                 words[i].length
               );
             }
+            if(anythingChanged)
+              matchedList.push(pattern);
           }
         } else {
           while (tempValidInputStr.includes(pattern)) {
             pos += tempValidInputStr.indexOf(pattern);
             tempValidInputStr = validInputStr.slice(pos + pattern.length);
-            setInvalidStorage(invalidStorage, pos, type, pattern.length);
-            matchedList.push(pattern);
+            if(setInvalidStorage(invalidStorage, pos, type, pattern.length))
+              matchedList.push(pattern);
             pos += pattern.length;
           }
         }
@@ -460,85 +455,72 @@ function check_notice() {
     let [validInputStr, invalidStorage] = sliceInvalidChar(inputStr);
     let initialStorage = {}; // invalidStorage对应的是清洗后的位置，initialStorage对应的是原始位置
 
-    const textSet = new Set(parseText(validInputStr));
     // 清洗后(去除标点、中文数字、特殊符号如™等)一些违禁词识别不到，因此原来的也要合并进去
     const textSetLong = new Set([...parseText(validInputStr, 4), ...parseText(inputStr, 4)]);
     
-    // 匹配bad_words（初步筛选）
-    const textBadSet = new Set(
-      [...badWordsSet].filter(
-        (word) =>
-          textSetLong.has(word) || // 命中
-          word[0] == "/" || // 正则表达式
-          word.length > 4 || // 快速筛选都是短片，超过4的需要手动检测
-          word.includes("|") // 多词匹配
-      )
-    );
+    function badsetProcessor(targetSet, textSetLong, inputStr, validInputStr, invalidStorage, initialStorage, matchedList, targetType) {
+      // 匹配bad_words（初步筛选）
+      const textBadSet = new Set(
+        [...targetSet].filter(
+          (word) =>
+            textSetLong.has(word) || // 命中
+            word[0] == "/" || // 正则表达式
+            word.length > 4 || // 快速筛选都是短片，超过4的需要手动检测
+            word.includes("|") // 多词匹配
+        )
+      );
+      checkBadWords(validInputStr, invalidStorage, textBadSet, matchedList, targetType);
+      checkBadWords(inputStr, initialStorage, textBadSet, matchedList, targetType);
+    }
 
     let matchedList = [];
 
-    matchedList = checkBadWords(validInputStr, invalidStorage, textBadSet, matchedList, "b");
-    matchedList = checkBadWords(inputStr, initialStorage, textBadSet, matchedList, "b");
+    badsetProcessor(badWordsSet, textSetLong, inputStr, validInputStr, invalidStorage, initialStorage, matchedList, "b");
+    badsetProcessor(mildBadWordsSet, textSetLong, inputStr, validInputStr, invalidStorage, initialStorage, matchedList, "c");
+    badsetProcessor(enhancedBadWordsSet, textSetLong, inputStr, validInputStr, invalidStorage, initialStorage, matchedList, "a");
+    
 
-    if (document.querySelector("#enhanced-check").checked) {
-      // 匹配enhanced_bad_words
-      const textEnhancedBadSet = new Set(
-        [...enhancedBadWordsSet].filter(
-          (word) =>
-            textSetLong.has(word) ||
-            word[0] == "/" ||
-            word.length > 4 ||
-            word.includes("|")
-        )
-      );
-      matchedList = checkBadWords(validInputStr, invalidStorage, textEnhancedBadSet, matchedList, "a");
-      matchedList = checkBadWords(inputStr, initialStorage, textEnhancedBadSet, matchedList, "a");
-    }
-
+    const textSet = new Set(parseText(validInputStr));
     // 匹配accept_words
-    const textAcceptSet = new Set(
-      [...textSet].filter((word) => acceptWordsSet.has(word))
-    );
-    for (const word of textAcceptSet) {
-      let tempValidInputStr = validInputStr;
-      let pos = 0;
-      while (tempValidInputStr.includes(word)) {
-        pos += tempValidInputStr.indexOf(word);
-        tempValidInputStr = validInputStr.slice(pos + word.length);
-        setInvalidStorage(invalidStorage, pos, "c", word.length);
-        pos += word.length;
+    function acceptsetProcessor(acceptWordsSet, textSet, validInputStr, invalidStorage, targetType) {
+      const textAcceptSet = new Set(
+        [...textSet].filter((word) => acceptWordsSet.has(word))
+      );
+      for (const word of textAcceptSet) {
+        let tempValidInputStr = validInputStr;
+        let pos = 0;
+        while (tempValidInputStr.includes(word)) {
+          pos += tempValidInputStr.indexOf(word);
+          tempValidInputStr = validInputStr.slice(pos + word.length);
+          setInvalidStorage(invalidStorage, pos, targetType, word.length);
+          pos += word.length;
+        }
       }
     }
+    acceptsetProcessor(acceptWordsSet, textSet, validInputStr, invalidStorage, "d");
+    acceptsetProcessor(warnWordsSet, textSet, validInputStr, invalidStorage, "e");
 
-    // 匹配warn_words
-    const textWarnSet = new Set(
-      [...textSet].filter((word) => warnWordsSet.has(word))
-    );
-    for (const word of textWarnSet) {
-      let tempValidInputStr = validInputStr;
-      let pos = 0;
-      while (tempValidInputStr.includes(word)) {
-        pos += tempValidInputStr.indexOf(word);
-        tempValidInputStr = validInputStr.slice(pos + word.length);
-        setInvalidStorage(invalidStorage, pos, "d", word.length);
-        pos += word.length;
-      }
-    }
     // 转义\n为<br>
     let result = restoreInvalidChar(validInputStr, invalidStorage, initialStorage).replace(
       /\n/g,
       "<br>"
     );
     document.querySelector("#results").innerHTML = result;
+    // 对matchedlist去重
+    matchedList = [...new Set(matchedList)];
     if (matchedList.length === 0) {
       document.querySelector(
         "#matches"
       ).innerHTML = `<div>未找到违禁词！你可以试试<a href="/pages/FAQ/aliceblue" target="_blank">下列解决方案</a><br><iframe src="/pages/FAQ1/aliceblue_iframe" width="100%" height="300px" style="background:transparent"></iframe></div>`;
+      document.querySelector("#matches").classList.remove("skyblue");
+      document.querySelector("#legend").style.display = "none";
       addCopyButton(document.querySelector("#qq"));
       addCopyButton(document.querySelector("#wechat"));
     } else {
       document.querySelector("#matches").innerHTML =
         "匹配到的词汇：" + matchedList.join(", ");
+      document.querySelector("#matches").classList.add("skyblue");
+      document.querySelector("#legend").style.display = "block";
     }
   }
 
