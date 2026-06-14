@@ -575,6 +575,7 @@ redirect_from:
             }
             const info = document.createElement("div");
             const title = document.createElement("h3");
+            if (pageTitle === '') return;
             title.textContent = pageTitle;
             const time = document.createElement("p");
             function getTimeDescription(timeDelta) {

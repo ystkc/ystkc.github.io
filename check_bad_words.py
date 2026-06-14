@@ -147,8 +147,9 @@ while check_word!= '#':
         plus_number = False
         if check_word[-1] == '+':
             if check_word[0] == '!':
-                check_word = check_word[1:]
-            check_word = '/'+check_word[:-1]+'(?:.{0,10}?)[0-9]{3,}/'
+                check_word = '!/'+check_word[1:-1]+'(?:.{0,10}?)[0-9]{3,}/'
+            else:
+                check_word = '/'+check_word[:-1]+'(?:.{0,10}?)[0-9]{3,}/'
         # /something(?:.{0,10}?)[a-zA-Z0-9]{3,}/
         # /something(?:[^\n]{0,10}?)[a-zA-Z0-9]{3,}/
         if check_word in bad_words:
