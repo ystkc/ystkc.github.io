@@ -277,29 +277,38 @@
       });
     }
   };
+  function copyText(text, element=null) {
+    navigator.clipboard.writeText(text).then(
+      () => {alert("复制成功awa");},
+      (err) => {
+        // 尝试使用 execCommand 进行复制
+        try {
+          if (!element) {
+            element = document.createElement("span");
+            element.innerText = text;
+            element.style.display = 'none';
+            document.body.appendChild(element);
+          }
+          // 选中元素
+          var range = document.createRange();
+          range.selectNode(element);
+          var selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          // 执行复制
+          if (document.execCommand("copy")) alert("复制成功ω▼ω");
+          else alert("复制失败ωΔω请手动复制");
+          // 取消选中元素
+          selection.removeAllRanges();
+        } catch (e) {
+          alert("复制失败qwq请手动复制", e);
+        }
+      }
+    );
+  }
   function addCopyListener(element) {
     element.addEventListener("click", function () {
-      navigator.clipboard.writeText(element.innerText).then(
-        () => {alert("复制成功awa");},
-        (err) => {
-          // 尝试使用 execCommand 进行复制
-          try {
-            // 选中元素
-            var range = document.createRange();
-            range.selectNode(element);
-            var selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            // 执行复制
-            if (document.execCommand("copy")) alert("复制成功ω▼ω");
-            else alert("复制失败ωΔω请手动复制");
-            // 取消选中元素
-            selection.removeAllRanges();
-          } catch (e) {
-            alert("复制失败qwq请手动复制", e);
-          }
-        }
-      );
+      copyText(element.innerText, element);
     });
   }
   function addCopyButton(element=null) {

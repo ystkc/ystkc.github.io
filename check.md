@@ -17,6 +17,7 @@ Created by 半只橙 & Cereanilla麦花<br>
 <div class="t-rex-wrapper">
 <div class="interstitial-wrapper" id="t-rex"></div>
 <textarea id="notice-input" placeholder="Paste your BCZ notice here..." style="width: 80%; height: 300px;" disabled>正在加载词库...请稍候...</textarea>
+<div id="notice-length" aria-live="polite">当前长度：0</div>
 </div>
 
 <script>
@@ -31,7 +32,7 @@ if (!hasTrexAccess()) {
   document.getElementById('reminder').style.display = 'none';
 }
 </script>
-<br><span><button id="search-btn" class="btn" onclick="check_notice()">Check</button>加强词典<input checked type="checkbox" style="width: 30px; height: 30px;" id="enhanced-check"></span>
+<br><span><button id="search-btn" class="btn" onclick="check_notice()">Check</button><button id="disperse-btn" class="btn" onclick="disperse_bad_words()" disabled>违禁词退散！</button>加强词典<input checked type="checkbox" style="width: 30px; height: 30px;" id="enhanced-check"></span>
 <div id="matches"></div>
 <div id="warn">本工具与百词斩官方无关，违禁词为用户收集<br><span style="color:red;" id="warn">使用本工具代表您确认自己的内容合法合规<br>如用于传播不良信息产生的包括但不限于封号的后果由您自负</span><br>
 <div id="legend">详细检查结果：<span class="violet" title="根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">确定的违禁词汇</span>

@@ -97,6 +97,49 @@ const replaceMapUrl = "/assets/replace_map.jsonl";
 let badWords, enhancedBadWords, acceptWords, warnWords, replaceMap;
 let acceptWordsSet, warnWordsSet, badWordsSet, mildBadWordsSet, enhancedBadWordsSet;
 let initStatus = 0;
+let lastMatchedWords = [];
+const disperseSuffix = "\n#违禁词退散#东南形胜，三吴都会，钱塘自古繁华，烟柳画桥，风帘翠幕，参差十万人家。云树绕堤沙，怒涛卷霜雪，天堑无涯。市列珠玑，户盈罗绮，竞豪奢。";
+
+function updateNoticeLength() {
+  const noticeInput = document.querySelector("#notice-input");
+  document.querySelector("#notice-length").textContent = `当前长度：${noticeInput.value.length}`;
+}
+
+function punctuateBadWord(word) {
+  const characters = Array.from(word);
+  const digitCount = characters.filter((character) => /\d/.test(character)).length;
+  if (digitCount >= 3) {
+    let seenDigits = 0;
+    return characters.map((character) => {
+      if (!/\d/.test(character)) return character;
+      seenDigits++;
+      return seenDigits < digitCount ? character + "。" : character;
+    }).join("");
+  }
+  return characters.length > 1 ? characters[0] + "。" + characters.slice(1).join("") : word;
+}
+
+function disperse_bad_words() {
+  const noticeInput = document.querySelector("#notice-input");
+  let notice = noticeInput.value;
+  const words = [...new Set(lastMatchedWords.flatMap((word) => word.split("|")).filter(Boolean))]
+    .sort((a, b) => b.length - a.length);
+
+  for (const word of words) {
+    notice = notice.split(word).join(punctuateBadWord(word));
+  }
+  const newNotice = notice + disperseSuffix;
+  noticeInput.value = newNotice;
+  alert('退！再复制公告去试试（从后往前删）');
+  copyText(newNotice);
+  lastMatchedWords = [];
+  document.querySelector("#disperse-btn").disabled = true;
+  updateNoticeLength();
+  check_notice();
+  // 复制到剪贴板
+  noticeInput.focus();
+}
+
 async function init() {
   url = window.location.origin;
   [badWords, acceptWords, enhancedBadWords, warnWords, replaceMap] = await Promise.all([
@@ -126,6 +169,12 @@ async function init() {
   initStatus = 1;
 }
 window.onload = async function () {
+  const noticeInput = document.querySelector("#notice-input");
+  noticeInput.addEventListener("input", function () {
+    lastMatchedWords = [];
+    document.querySelector("#disperse-btn").disabled = true;
+    updateNoticeLength();
+  });
   const initPromise = init().catch(console.error);
 
   await initPromise;
@@ -147,6 +196,7 @@ window.onload = async function () {
       document.querySelector("#notice-input").focus();
     }
   }
+  updateNoticeLength();
 };
 
 function goodMaomao() {
@@ -195,7 +245,7 @@ function check_notice() {
       // const invalidChars = [',', '.', '!', '?', ':', ';', '，', '。', '！', '？', '：', '；','\n',' ','/','"',"'",'、','‘','’','“','”','(',')','（','）','~','*','@','～','【','】','《','》','[',']','%','％']
       // const pattern = /[^\w\d\u4e00-\u9fa5\u2700-\u27bf\u{1F650}-\u{1F67F}\u{1F600}-\u{1F64F}\u2600-\u26FF\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}\u{1F680}-\u{1F6FF}\u{1F100}-\u{1F1FF}\u{1F200}-\u{1F2FF}]/u;
       // const pattern = /[,!.?;:，。！？：；\n /"\',、‘’“”()（）~*@～【】《》[\]%％]/g;
-      const pattern = /[\n ]/g;
+      const pattern = /[\n/ ]/g;
       const invalidStorage = {};
       let position = 0;
       let newText = "";
@@ -508,6 +558,8 @@ function check_notice() {
     document.querySelector("#results").innerHTML = result;
     // 对matchedlist去重
     matchedList = [...new Set(matchedList)];
+    lastMatchedWords = matchedList;
+    document.querySelector("#disperse-btn").disabled = matchedList.length === 0;
     if (matchedList.length === 0) {
       document.querySelector(
         "#matches"
