@@ -19,7 +19,7 @@ function encoder(array) {
   return result;
 }
 
-async function fetchBin(url, index, total, encoder=true) {
+async function fetchBin(url, index, total, encoder = true) {
   return await fetch(url.replace(".zip", ""))
     .then((response) => {
       if (!response.ok) {
@@ -93,62 +93,299 @@ const badWordsUrl = "/assets/bad_words.bin.zip";
 const enhancedBadWordsUrl = "/assets/enhanced_bad_words.bin.zip";
 const warnWordsUrl = "/assets/warn_words.bin.zip";
 const replaceMapUrl = "/assets/replace_map.jsonl";
+const saltCharactersUrl = `/assets/characters.text`;
 
 let badWords, enhancedBadWords, acceptWords, warnWords, replaceMap;
-let acceptWordsSet, warnWordsSet, badWordsSet, mildBadWordsSet, enhancedBadWordsSet;
+let acceptWordsSet,
+  warnWordsSet,
+  badWordsSet,
+  mildBadWordsSet,
+  enhancedBadWordsSet;
 let initStatus = 0;
 let lastMatchedWords = [];
-const disperseSuffix = "\n#违禁词退散#东南形胜，三吴都会，钱塘自古繁华，烟柳画桥，风帘翠幕，参差十万人家。云树绕堤沙，怒涛卷霜雪，天堑无涯。市列珠玑，户盈罗绮，竞豪奢。";
+const saltUndoStack = [];
+const disperseSuffix =
+  "\n#违禁词退散#东南形胜，三吴都会，钱塘自古繁华，烟柳画桥，风帘翠幕，参差十万人家。云树绕堤沙，怒涛卷霜雪，天堑无涯。市列珠玑，户盈罗绮，竞豪奢。";
+const graphemeSegmenter = new Intl.Segmenter(undefined, {
+  granularity: "grapheme",
+});
+
+function splitGraphemes(text) {
+  return Array.from(graphemeSegmenter.segment(text), ({ segment }) => segment);
+}
 
 function updateNoticeLength() {
   const noticeInput = document.querySelector("#notice-input");
-  document.querySelector("#notice-length").textContent = `当前长度：${noticeInput.value.length}`;
+  document.querySelector(
+    "#notice-length"
+  ).textContent = `当前长度：${noticeInput.value.length}`;
+}
+
+function saveSaltUndo(text) {
+  saltUndoStack.push(text);
+  document.querySelector("#salt-undo-btn").hidden = false;
+}
+
+function undoSalt() {
+  if (!saltUndoStack.length) return;
+  const noticeInput = document.querySelector("#notice-input");
+  noticeInput.value = saltUndoStack.pop();
+  document.querySelector("#salt-undo-btn").hidden = saltUndoStack.length === 0;
+  updateNoticeLength();
+  noticeInput.focus();
 }
 
 function punctuateBadWord(word) {
-  const characters = Array.from(word);
-  const digitCount = characters.filter((character) => /\d/.test(character)).length;
+  const characters = splitGraphemes(word);
+  const digitCount = characters.filter((character) =>
+    /\d/.test(character)
+  ).length;
   if (digitCount >= 3) {
     let seenDigits = 0;
-    return characters.map((character) => {
-      if (!/\d/.test(character)) return character;
-      seenDigits++;
-      return seenDigits < digitCount ? character + "。" : character;
-    }).join("");
+    return characters
+      .map((character) => {
+        if (!/\d/.test(character)) return character;
+        seenDigits++;
+        return seenDigits < digitCount ? character + "。" : character;
+      })
+      .join("");
   }
-  return characters.length > 1 ? characters[0] + "。" + characters.slice(1).join("") : word;
+  return characters.length > 1
+    ? characters[0] + "。" + characters.slice(1).join("")
+    : "";
+  // 如果只有一个字符，直接删掉
 }
 
-function disperse_bad_words() {
+function punctuateBadWordWrapper() {
   const noticeInput = document.querySelector("#notice-input");
-  let notice = noticeInput.value;
-  const words = [...new Set(lastMatchedWords.flatMap((word) => word.split("|")).filter(Boolean))]
-    .sort((a, b) => b.length - a.length);
+  const previousNotice = noticeInput.value;
+  let notice = previousNotice.replaceAll(":", "").replaceAll("：", ""); // 冒号老违禁词了，不解释
+  const words = [
+    ...new Set(
+      lastMatchedWords.flatMap((word) => word.split("|")).filter(Boolean)
+    ),
+  ].sort((a, b) => b.length - a.length);
 
   for (const word of words) {
     notice = notice.split(word).join(punctuateBadWord(word));
   }
   const newNotice = notice + disperseSuffix;
+  saveSaltUndo(previousNotice);
   noticeInput.value = newNotice;
-  alert('退！再复制公告去试试（从后往前删）');
   copyText(newNotice);
   lastMatchedWords = [];
-  document.querySelector("#disperse-btn").disabled = true;
   updateNoticeLength();
   check_notice();
   // 复制到剪贴板
   noticeInput.focus();
 }
+const pinyinGroups = {};
+let saltMode = "vertical";
+let saltText = "";
+let saltRanges = [];
+let saltPendingStart = null;
+let saltPinyinGroups = null;
+
+function autoSaltRanges(text) {
+  const chars = splitGraphemes(text),
+    ranges = [];
+  for (let i = 0; i < chars.length; i++)
+    if (chars[i] === "@") {
+      let j = i + 1;
+      while (j < chars.length && !/\s/.test(chars[j])) j++;
+      ranges.push([i, j+1]);
+      i = j;
+    }
+  return ranges;
+}
+function inSaltRange(i) {
+  return saltRanges.some(([a, b]) => i >= a && i < b);
+}
+function renderSaltEditor() {
+  const box = document.querySelector("#salt-protect-text");
+  box.innerHTML = "";
+  splitGraphemes(saltText).forEach((ch, i) => {
+    const el = document.createElement("button");
+    el.type = "button";
+    el.textContent = ch === " " ? "·" : ch === "\n" ? "↵" : ch;
+    el.dataset.index = i;
+    el.className = inSaltRange(i)
+      ? "salt-protected"
+      : i === saltPendingStart
+      ? "salt-start"
+      : "salt-free";
+    el.title = inSaltRange(i) ? "点击取消保护" : "点击后再点另一字符确定范围";
+    el.onclick = () => saltCharClick(i);
+    box.appendChild(el);
+  });
+}
+function saltCharClick(i) {
+  if (inSaltRange(i)) {
+    saltRanges = saltRanges.filter(([a, b]) => !(i >= a && i < b));
+    saltPendingStart = null;
+  } else if (saltPendingStart === null) saltPendingStart = i;
+  else {
+    const a = Math.min(saltPendingStart, i),
+      b = Math.max(saltPendingStart, i) + 1;
+    saltRanges.push([a, b]);
+    saltPendingStart = null;
+  }
+  renderSaltEditor();
+}
+function normalizeSaltRanges() {
+  const merged = [];
+  for (const [a, b] of saltRanges
+    .filter((r) => r[1] > r[0])
+    .sort((x, y) => x[0] - y[0])) {
+    const last = merged[merged.length - 1];
+    if (last && a <= last[1]) last[1] = Math.max(last[1], b);
+    else merged.push([a, b]);
+  }
+  saltRanges = merged;
+}
+function openSaltProtect(mode) {
+  saltMode = mode;
+  saltText = document.querySelector("#notice-input").value;
+  saltRanges = autoSaltRanges(saltText);
+  saltPendingStart = null;
+  renderSaltEditor();
+  document.querySelector("#salt-ratio-wrap").hidden = mode !== "homophone";
+  document.querySelector("#salt-protect-dialog").showModal();
+}
+function transformProtected(text, transform) {
+  const chars = splitGraphemes(text);
+  let out = "",
+    p = 0;
+  for (const [a, b] of saltRanges.sort((x, y) => x[0] - y[0])) {
+    out += transform(chars.slice(p, a).join("")) + chars.slice(a, b).join("");
+    p = b;
+  }
+  return out + transform(chars.slice(p).join(""));
+}
+function verticalPart(part) {
+  if (!part) return "";
+  const columns = [];
+  sourceLine = part.trim().replaceAll("\n", "#").replaceAll(" ", "　"); // 将换行替换为#、空格替换为全角空格
+  const chars = splitGraphemes(sourceLine),
+    count = Math.max(2, Math.min(9, Math.floor(chars.length / 10))),
+    rows = Math.ceil(chars.length / count);
+  for (let c = 0; c < count; c++)
+    columns.push(chars.slice(c * rows, (c + 1) * rows));
+  const height = Math.max(0, ...columns.map((c) => c.length)),
+    lines = [];
+  for (let r = 0; r < height; r++)
+    lines.push(
+      columns
+        .map((column, c) => {
+          const x = column[r];
+          if (x === undefined) return "  ";
+          return c < columns.length - 1 && /[\x00-\x7f]/.test(x) ? x + " " : x;
+        })
+        .join("┃")
+    );
+  return "\n" + lines.join("\n") + "\n";
+}
+function verticalSalt(text) {
+  return transformProtected(text, verticalPart);
+}
+async function loadSaltPinyinGroups() {
+  if (saltPinyinGroups) return saltPinyinGroups;
+  if (!window.pinyinPro?.pinyin)
+    throw new Error("拼音库加载失败，请刷新页面后重试");
+  const content = await fetch(saltCharactersUrl).then((r) => {
+    if (!r.ok) throw new Error(`替换字库加载失败：${r.status}`);
+    return r.text();
+  });
+  const candidates = content
+    .split(/\r?\n/)
+    .flatMap((line) => {
+      const words = line.trim().split(/\s+/).filter(Boolean);
+      return words.length === 1 && Array.from(words[0]).length >= 2
+        ? []
+        : words;
+    })
+    .flatMap((word) => Array.from(word))
+    .filter((x) => /^[\u4e00-\u9fff]$/.test(x));
+  const groups = {};
+  for (const c of new Set(candidates)) {
+    const py = window.pinyinPro.pinyin(c, {
+      toneType: "symbol",
+      type: "array",
+    })[0];
+    (groups[py] ||= []).push(c);
+  }
+  saltPinyinGroups = groups;
+  return groups;
+}
+async function homophoneSalt(text, ratio) {
+  const groups = await loadSaltPinyinGroups(),
+    chars = splitGraphemes(text),
+    candidates = [];
+  chars.forEach((c, i) => {
+    if (/^[\u4e00-\u9fff]$/.test(c) && !inSaltRange(i)) {
+      const py = window.pinyinPro.pinyin(c, {
+          toneType: "symbol",
+          type: "array",
+        })[0],
+        pool = (groups[py] || []).filter((x) => x !== c);
+      if (pool.length) candidates.push({ i, pool });
+    }
+  });
+  const count = Math.min(
+    candidates.length,
+    Math.floor(candidates.length * Math.max(0, Math.min(1, ratio)))
+  );
+  for (let n = candidates.length - 1; n > 0; n--) {
+    const j = Math.floor(Math.random() * (n + 1));
+    [candidates[n], candidates[j]] = [candidates[j], candidates[n]];
+  }
+  for (const { i, pool } of candidates.slice(0, count))
+    chars[i] = pool[Math.floor(Math.random() * pool.length)];
+  return chars.join("");
+}
+function disperse_bad_words() {
+  document.querySelector("#salt-choice-dialog").showModal();
+}
+document.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("salt-choice")) return;
+  e.preventDefault();
+  document.querySelector("#salt-choice-dialog").close();
+  if (e.target.value === "punctuate") {
+    punctuateBadWordWrapper();
+    return;
+  }
+  openSaltProtect(e.target.value);
+});
+document
+  .querySelector("#salt-protect-dialog")
+  ?.addEventListener("close", async (e) => {
+    if (e.target.returnValue !== "apply") return;
+    normalizeSaltRanges();
+    const input = document.querySelector("#notice-input");
+    const saltedText =
+      saltMode === "vertical"
+        ? verticalSalt(saltText)
+        : await homophoneSalt(
+            saltText,
+            Number(document.querySelector("#salt-ratio").value)
+          );
+    saveSaltUndo(input.value);
+    input.value = saltedText;
+    copyText(input.value);
+    updateNoticeLength();
+    input.focus();
+  });
 
 async function init() {
   url = window.location.origin;
-  [badWords, acceptWords, enhancedBadWords, warnWords, replaceMap] = await Promise.all([
-    fetchBinAndUnzip(url + badWordsUrl, 1, 5),
-    fetchBinAndUnzip(url + acceptWordsUrl, 2, 5, false),
-    fetchBinAndUnzip(url + enhancedBadWordsUrl, 3, 5),
-    fetchBinAndUnzip(url + warnWordsUrl, 4, 5, false),
-    fetchBin(url + replaceMapUrl, 5, 5, false),
-  ]);
+  [badWords, acceptWords, enhancedBadWords, warnWords, replaceMap] =
+    await Promise.all([
+      fetchBinAndUnzip(url + badWordsUrl, 1, 5),
+      fetchBinAndUnzip(url + acceptWordsUrl, 2, 5, false),
+      fetchBinAndUnzip(url + enhancedBadWordsUrl, 3, 5),
+      fetchBinAndUnzip(url + warnWordsUrl, 4, 5, false),
+      fetchBin(url + replaceMapUrl, 5, 5, false),
+    ]);
   if (
     badWords === undefined ||
     acceptWords === undefined ||
@@ -161,18 +398,18 @@ async function init() {
 
   acceptWordsSet = new Set(acceptWords.slice(1));
   warnWordsSet = new Set(warnWords);
-  const mildBadWords = badWords.filter(word => word.startsWith("!"));
-  const remainingBadWords = badWords.filter(word => !word.startsWith("!"));
+  const mildBadWords = badWords.filter((word) => word.startsWith("!"));
+  const remainingBadWords = badWords.filter((word) => !word.startsWith("!"));
   badWordsSet = new Set(remainingBadWords);
-  mildBadWordsSet = new Set(mildBadWords.map(word => word.slice(1)));
+  mildBadWordsSet = new Set(mildBadWords.map((word) => word.slice(1)));
   enhancedBadWordsSet = new Set(enhancedBadWords);
   initStatus = 1;
 }
 window.onload = async function () {
   const noticeInput = document.querySelector("#notice-input");
   noticeInput.addEventListener("input", function () {
-    lastMatchedWords = [];
-    document.querySelector("#disperse-btn").disabled = true;
+    // lastMatchedWords = [];
+    // document.querySelector("#disperse-btn").style.display = "None";
     updateNoticeLength();
   });
   const initPromise = init().catch(console.error);
@@ -187,10 +424,14 @@ window.onload = async function () {
     document.querySelector("#notice-input").value = "";
     document.querySelector("#results").innerHTML += "初始化完成！<br>";
     document.querySelector("#date").innerHTML =
-      acceptWords[0] + ",共收录" + (badWords.length + enhancedBadWords.length) + "个违禁词";
+      acceptWords[0] +
+      ",共收录" +
+      (badWords.length + enhancedBadWords.length) +
+      "个违禁词";
     const hasTrexCookie = document.cookie.includes("trex_access");
     if (hasTrexCookie) {
-      document.querySelector("#reminder").textContent = "你需要让小恐龙获得201分才能查违禁词哦！";
+      document.querySelector("#reminder").textContent =
+        "你需要让小恐龙获得201分才能查违禁词哦！";
     } else {
       document.querySelector("#notice-input").disabled = false;
       document.querySelector("#notice-input").focus();
@@ -200,8 +441,10 @@ window.onload = async function () {
 };
 
 function goodMaomao() {
-  document.querySelector("#reminder").textContent = "可以查公告咯！【点此关闭游戏】";
-  document.querySelector("#reminder").onclick = "document.getElementById('t-rex').remove(),document.getElementById('reminder').remove()";
+  document.querySelector("#reminder").textContent =
+    "可以查公告咯！【点此关闭游戏】";
+  document.querySelector("#reminder").onclick =
+    "document.getElementById('t-rex').remove(),document.getElementById('reminder').remove()";
   document.querySelector("#notice-input").disabled = false;
   document.querySelector("#notice-input").focus();
 }
@@ -267,9 +510,9 @@ function check_notice() {
           setInvalidStorage(invalidStorage, position, char);
           i++; // 继续检查下一个字符
           if (doubleChar) position--; // 双字符的一点小问题
-        } else if (char in replaceMap) { // 特殊形式的字母、数字，替换为常规形式
+        } else if (char in replaceMap) {
+          // 特殊形式的字母、数字，替换为常规形式
           newText += replaceMap[char];
-          console.log(newText);
           setInvalidStorage(invalidStorage, position, char);
           position++;
           i++; // 继续检查下一个字符
@@ -288,8 +531,6 @@ function check_notice() {
           position++;
         }
       }
-      // console.log(newText);
-      // console.log(invalidStorage);
       return [newText, invalidStorage];
     }
 
@@ -338,8 +579,10 @@ function check_notice() {
           }
 
           for (const char of invalidStorage[position]) {
-            if (char >= "a" && char <= "z") { // 是控制字符
-              if (char < minChar) { // 越靠近a，覆盖优先级越高
+            if (char >= "a" && char <= "z") {
+              // 是控制字符
+              if (char < minChar) {
+                // 越靠近a，覆盖优先级越高
                 minChar = char;
                 minCharCnt = 1;
               } else if (char == minChar) {
@@ -350,7 +593,8 @@ function check_notice() {
               (char >= "A" && char <= "Z") // 是被替换的字符
             ) {
               temp_text = char;
-            } else { // 是无效字符，取消所有控制色
+            } else {
+              // 是无效字符，取消所有控制色
               newText += "</span>" + char;
               bad = false;
               mildBad = false;
@@ -414,7 +658,10 @@ function check_notice() {
             newText +=
               '<span class="warn yellow" title="这是疑似违禁词，大约10%可能性。收集以前被清空过的公告，可能含有违禁词，但准确性不高" onclick="alert(this.title)">';
             warn = true;
-          } else if (minChar === "z" && (bad || mildBad || accept || warn || enhance)) {
+          } else if (
+            minChar === "z" &&
+            (bad || mildBad || accept || warn || enhance)
+          ) {
             newText += "</span>";
             bad = false;
             mildBad = false;
@@ -431,7 +678,6 @@ function check_notice() {
           enhance = false;
         }
         newText += temp_text;
-        console.log(newText);
         if (doubleChar) {
           textPosition++;
           position++;
@@ -441,7 +687,13 @@ function check_notice() {
       return newText;
     }
 
-    function checkBadWords(validInputStr, invalidStorage, patternSet, matchedList, type) {
+    function checkBadWords(
+      validInputStr,
+      invalidStorage,
+      patternSet,
+      matchedList,
+      type
+    ) {
       for (const pattern of patternSet) {
         let tempValidInputStr = validInputStr;
         let pos = 0;
@@ -455,8 +707,7 @@ function check_notice() {
             pos += tempValidInputStr.indexOf(match[i]);
             length = match[i].length;
             tempValidInputStr = validInputStr.slice(pos + length);
-            console.log(pos, length, match[i], type);
-            if(setInvalidStorage(invalidStorage, pos, type, length))
+            if (setInvalidStorage(invalidStorage, pos, type, length))
               matchedList.push(match[i]);
             pos += length;
           }
@@ -486,14 +737,13 @@ function check_notice() {
                 words[i].length
               );
             }
-            if(anythingChanged)
-              matchedList.push(pattern);
+            if (anythingChanged) matchedList.push(pattern);
           }
         } else {
           while (tempValidInputStr.includes(pattern)) {
             pos += tempValidInputStr.indexOf(pattern);
             tempValidInputStr = validInputStr.slice(pos + pattern.length);
-            if(setInvalidStorage(invalidStorage, pos, type, pattern.length))
+            if (setInvalidStorage(invalidStorage, pos, type, pattern.length))
               matchedList.push(pattern);
             pos += pattern.length;
           }
@@ -506,9 +756,21 @@ function check_notice() {
     let initialStorage = {}; // invalidStorage对应的是清洗后的位置，initialStorage对应的是原始位置
 
     // 清洗后(去除标点、中文数字、特殊符号如™等)一些违禁词识别不到，因此原来的也要合并进去
-    const textSetLong = new Set([...parseText(validInputStr, 4), ...parseText(inputStr, 4)]);
-    
-    function badsetProcessor(targetSet, textSetLong, inputStr, validInputStr, invalidStorage, initialStorage, matchedList, targetType) {
+    const textSetLong = new Set([
+      ...parseText(validInputStr, 4),
+      ...parseText(inputStr, 4),
+    ]);
+
+    function badsetProcessor(
+      targetSet,
+      textSetLong,
+      inputStr,
+      validInputStr,
+      invalidStorage,
+      initialStorage,
+      matchedList,
+      targetType
+    ) {
       // 匹配bad_words（初步筛选）
       const textBadSet = new Set(
         [...targetSet].filter(
@@ -519,20 +781,64 @@ function check_notice() {
             word.includes("|") // 多词匹配
         )
       );
-      checkBadWords(validInputStr, invalidStorage, textBadSet, matchedList, targetType);
-      checkBadWords(inputStr, initialStorage, textBadSet, matchedList, targetType);
+      checkBadWords(
+        validInputStr,
+        invalidStorage,
+        textBadSet,
+        matchedList,
+        targetType
+      );
+      checkBadWords(
+        inputStr,
+        initialStorage,
+        textBadSet,
+        matchedList,
+        targetType
+      );
     }
 
     let matchedList = [];
 
-    badsetProcessor(badWordsSet, textSetLong, inputStr, validInputStr, invalidStorage, initialStorage, matchedList, "b");
-    badsetProcessor(mildBadWordsSet, textSetLong, inputStr, validInputStr, invalidStorage, initialStorage, matchedList, "c");
-    badsetProcessor(enhancedBadWordsSet, textSetLong, inputStr, validInputStr, invalidStorage, initialStorage, matchedList, "a");
-    
+    badsetProcessor(
+      badWordsSet,
+      textSetLong,
+      inputStr,
+      validInputStr,
+      invalidStorage,
+      initialStorage,
+      matchedList,
+      "b"
+    );
+    badsetProcessor(
+      mildBadWordsSet,
+      textSetLong,
+      inputStr,
+      validInputStr,
+      invalidStorage,
+      initialStorage,
+      matchedList,
+      "c"
+    );
+    badsetProcessor(
+      enhancedBadWordsSet,
+      textSetLong,
+      inputStr,
+      validInputStr,
+      invalidStorage,
+      initialStorage,
+      matchedList,
+      "a"
+    );
 
     const textSet = new Set(parseText(validInputStr));
     // 匹配accept_words
-    function acceptsetProcessor(acceptWordsSet, textSet, validInputStr, invalidStorage, targetType) {
+    function acceptsetProcessor(
+      acceptWordsSet,
+      textSet,
+      validInputStr,
+      invalidStorage,
+      targetType
+    ) {
       const textAcceptSet = new Set(
         [...textSet].filter((word) => acceptWordsSet.has(word))
       );
@@ -547,19 +853,32 @@ function check_notice() {
         }
       }
     }
-    acceptsetProcessor(acceptWordsSet, textSet, validInputStr, invalidStorage, "d");
-    acceptsetProcessor(warnWordsSet, textSet, validInputStr, invalidStorage, "e");
+    acceptsetProcessor(
+      acceptWordsSet,
+      textSet,
+      validInputStr,
+      invalidStorage,
+      "d"
+    );
+    acceptsetProcessor(
+      warnWordsSet,
+      textSet,
+      validInputStr,
+      invalidStorage,
+      "e"
+    );
 
     // 转义\n为<br>
-    let result = restoreInvalidChar(validInputStr, invalidStorage, initialStorage).replace(
-      /\n/g,
-      "<br>"
-    );
+    let result = restoreInvalidChar(
+      validInputStr,
+      invalidStorage,
+      initialStorage
+    ).replace(/\n/g, "<br>");
     document.querySelector("#results").innerHTML = result;
     // 对matchedlist去重
     matchedList = [...new Set(matchedList)];
     lastMatchedWords = matchedList;
-    document.querySelector("#disperse-btn").disabled = matchedList.length === 0;
+    document.querySelector("#disperse-btn").hidden = false;
     if (matchedList.length === 0) {
       document.querySelector(
         "#matches"

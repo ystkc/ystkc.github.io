@@ -9,6 +9,16 @@ subtitle: .
 trexflag: 1
 ---
 <meta charset="UTF-8">
+<style>
+#salt-protect-dialog { max-width: 90vw; width: 760px; }
+#salt-protect-text { max-height: 45vh; overflow: auto; padding: 8px; line-height: 2; white-space: pre-wrap; font-family: monospace; border: 1px solid #bbb; }
+#salt-protect-text button { border: 0; padding: 2px 4px; margin: 1px; font: inherit; cursor: pointer; border-radius: 3px; }
+#salt-protect-text .salt-protected { background: #ffbd69; outline: 1px solid #d67b00; }
+#salt-protect-text .salt-start { background: #9fd0ff; outline: 2px solid #2678c8; }
+#salt-protect-text .salt-free { background: transparent; }
+#salt-protect-text .salt-free:hover { background: #d9ecff; }
+#salt-choice-dialog small { margin-left: 6px; }
+</style>
 <body>
 百词斩公告违禁词检查器<br>
 Created by 半只橙 & Cereanilla麦花<br>
@@ -32,7 +42,9 @@ if (!hasTrexAccess()) {
   document.getElementById('reminder').style.display = 'none';
 }
 </script>
-<br><span><button id="search-btn" class="btn" onclick="check_notice()">Check</button><button id="disperse-btn" class="btn" onclick="disperse_bad_words()" disabled>违禁词退散！</button>加强词典<input checked type="checkbox" style="width: 30px; height: 30px;" id="enhanced-check"></span>
+<br><span><button id="search-btn" class="btn" onclick="check_notice()">Check</button><button id="disperse-btn" class="btn" onclick="disperse_bad_words()" hidden>加盐</button><button id="salt-undo-btn" class="btn" onclick="undoSalt()" hidden>撤销加盐</button>加强词典<input checked type="checkbox" style="width: 30px; height: 30px;" id="enhanced-check"></span>
+<dialog id="salt-choice-dialog"><form method="dialog"><button title="将识别到的词中间加上句号，并在末尾加上《望海潮》上阙" value="punctuate" class="salt-choice">聚盐</button><br><button title="排成2~9列竖排框线，保护区原样保留。" value="vertical" class="salt-choice">树盐</button><br><button title="按带声调拼音替换部分汉字为不同的同音字，保护区不替换。" value="homophone" class="salt-choice">铜盐</button><button value="cancel">取消</button></form></dialog>
+<dialog id="salt-protect-dialog"><form method="dialog"><h3>编辑保护区</h3><p id="salt-protect-help">橙色是保护区。点击橙色可取消；点击普通字符两次，先定左边界、再定右边界，可新增保护区。</p><div id="salt-protect-text" tabindex="0"></div><label id="salt-ratio-wrap" hidden>替换比例 <input id="salt-ratio" type="number" min="0" max="1" step="0.05" value="0.3"></label><br><button value="apply">应用</button> <button value="cancel">取消</button></form></dialog>
 <div id="matches"></div>
 <div id="warn">本工具与百词斩官方无关，违禁词为用户收集<br><span style="color:red;" id="warn">使用本工具代表您确认自己的内容合法合规<br>如用于传播不良信息产生的包括但不限于封号的后果由您自负</span><br>
 <div id="legend">详细检查结果：<span class="violet" title="根据用户提交违禁词验证得到，一般真实有效" onclick="alert(this.title)">确定的违禁词汇</span>
@@ -45,6 +57,7 @@ if (!hasTrexAccess()) {
 <hr>
 <!-- jszip3.7.1 -->
 <script src="{{ site.baseurl }}/assets/js/jszip.min.js"></script>
+<script src="{{ site.baseurl }}/assets/js/pinyin-pro.min.js"></script>
 <script src="{{ site.baseurl }}/assets/js/script.js"></script>
 <!-- busuanzi寄咯@25.7.14 -->
 <!-- <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script> -->
